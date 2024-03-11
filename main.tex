@@ -1,14 +1,81 @@
-\documentclass{article}
+\documentclass[12pt]{article}
 \usepackage{graphicx} % Required for inserting images
 
-\title{cse-505-project}
+% refs and bib
+\usepackage{cite}               % order multiple entries in \cite{...}
+\usepackage{breakurl}           % break too-long urls in refs
+\usepackage{url}                % allow \url in bibtex for clickable links
+\usepackage{xcolor}             % color definitions, to be use for...
+\usepackage[]{hyperref}         % ...clickable refs within pdf...
+\hypersetup{                    % ...like so
+  colorlinks,
+  linkcolor={green!80!black},
+  citecolor={red!70!black},
+  urlcolor={blue!70!black}
+}
+
+% papar margins
+\usepackage[letterpaper,
+            margin=1in,
+            bottom=1in]{geometry}
+
+\title{Knowlege Graph Augmented Generative AI for Course Recommendation and Schedule Building}
 \author{Adebayo Braimah}
-\date{March 2024}
+% \date{March 2024}
+\date{\today}
 
 \begin{document}
 
-\maketitle
+    % Title
+    \maketitle
+    
+    \section{Problem \& Plan}
+    \label{sec:prob_plan}
 
-\section{Introduction}
+    % Problem description:
+    % (1) the exact input and output desired, as an interface for how solutions to the problem can be used
+    % (2) other requirements, such as tools allowed and performance, for evaluation and comparison of solutions
+    % (3) example uses of the solutions in important and interesting applications.
+    Summary of inputs and outputs.
+
+    Inputs:
+
+    \begin{itemize}
+        \item Major (and minor if specified)
+        \item Degree level(s): non-degree seeking, associates, bachelors, masters, doctorate
+        \item Preferred graduation timeline
+        \item Knowledge graphs
+        \begin{itemize}
+            \item Graduation requirements
+            \item Department policies (e.g. restrictions on pass/fail courses)
+            % Policy links:
+            % https://www.cs.stonybrook.edu/sites/default/files/drupalfiles/basicpage/Undergraduate%20Policies.pdf
+            % https://www.cs.stonybrook.edu/sites/default/files/drupalfiles/basicpage/Professional%20Ethics.pdf
+        \end{itemize}
+    \end{itemize}
+
+    Outputs:
+
+    \begin{itemize}
+        \item Recommended schedule
+        \item Course recommendations
+    \end{itemize}
+    
+    \section{Design}
+    \label{sec:design}
+    
+    \section{Implementation}
+    \label{sec:implement}
+    
+    \section{Testing \& Evaluation}
+    \label{sec:test_eval}
+
+    % Add newpage here to separate references from the
+    % main text body
+    \newpage
+    
+    % Bibliography & References
+    \bibliographystyle{acm}
+    \bibliography{refs}
 
 \end{document}
