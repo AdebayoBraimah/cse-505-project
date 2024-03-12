@@ -38,6 +38,10 @@
             margin=1in,
             bottom=1in]{geometry}
 
+% Timeline
+\usepackage{tikz}
+\usetikzlibrary{fit, calc, decorations.markings}
+
 % Title
 % \title{Knowledge Graph Augmented Generative AI for Course Recommendation and Schedule Building}
 % 
@@ -64,6 +68,9 @@ Stony Brook University \\
 % Variables
 \def \repoLink{https://github.com/AdebayoBraimah/CSE505}
 
+% New commands
+\newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1}}}
+
 \begin{document}
     
     % Title
@@ -71,14 +78,14 @@ Stony Brook University \\
     
     \section{Problem \& Plan}
     \label{sec:prob_plan}
+    
+    \subsection{Problem Description}
+    \label{subsec:problem}
+    University course planning and understanding of graduation requirements can be a difficult process for new, in-coming students at all levels of one's education. Generally, new students are guided through this process by way of an academic advisor. However, this approach is expensive in both time and personnel (which are usually university faculty) -- especially in the case in which the personnel have to be trained on where to find and understand these graduation requirements. Additionally, in some cases -- the advising can be further complicated by the student's own personal interests (e.g. research focus, specific areas of interests, etc). The proposed solution to this problem would be a knowledge graph(s) augmented generative AI for course recommendation and schedule building. A summary of the inputs and outputs are shown below:
 
-    % Problem description:
-    % (1) the exact input and output desired, as an interface for how solutions to the problem can be used
-    % (2) other requirements, such as tools allowed and performance, for evaluation and comparison of solutions
-    % (3) example uses of the solutions in important and interesting applications.
-
-    \textbf{Problem Description}: University course planning and understanding of graduation requirements can be a difficult process for new, in-coming students at all levels of one's education. Generally, new students are guided through this process by way of an academic advisor. However, this approach is expensive in both time and personnel (which are usually university faculty) -- especially in the case in which the personnel have to be trained on where to find and understand these graduation requirements. Additionally, in some cases -- the advising can be further complicated by the student's own personal interests (e.g. research focus, specific areas of interests, etc). The proposed solution to this problem would be a knowledge graph(s) augmented generative AI for course recommendation and schedule building. A summary of the inputs and outputs are shown below:
-
+    \subsubsection{Input \& Output}
+    \label{subsubsec:in-out}
+    
     \textbf{Inputs}:
 
     \begin{itemize}
@@ -108,18 +115,87 @@ Stony Brook University \\
     \end{itemize}
 
     % Requirements
-    % example uses
+    \subsubsection{Requirements}
+    \label{subsubsec:reqs}
+    The requirements for this project would include:
 
-    \textbf{State of the art}: Current state-of-the-art (SOTA) approaches for these problems at Stony Brook University include: the \href{https://you.stonybrook.edu/uaamedia/schedulebuilder/}{schedule builder} and \href{https://classie-evals.stonybrook.edu/}{classie-evals} (for course evaluations). In the case of the schedule builder -- it will mostly help you build a schedule, semester by semester\cite{sched}, but it will not recommend classes nor will it direct you to the course reviews to those classes. Additionally, using the schedule builder requires one to login into \href{https://it.stonybrook.edu/services/solar}{SOLAR}\cite{sched}. In the case of the classie-evals, it does a good job gathering course reviews in one place\cite{class} -- however, that information could be made more available during a student's schedule building process.
-
-    \textbf{Tasks \& Sub-tasks}:
-
-    \textbf{Project plan}:
-
-    The repository for the planned code based is located at this public \href{\repoLink}{GitHub repository}.
+    \begin{itemize}
+        \item Tools
+        \begin{itemize}
+            \item Python
+            % \item Clingo (First-Order constraint solver)
+            \item ErgoAI (Knowledge graph querying)
+            \item LLMs (multiple are shown, likely only one will be used)
+            \begin{itemize}
+                \item LLaMA\cite{touvron2023llama}/LLaMA-2\cite{touvron2023llama2}
+                \item Alpaca\cite{alpaca}
+                \item Chat-GPT 3.5-turbo\cite{ye2023gpt3.5}
+            \end{itemize}
+            \item Sub-graph extraction
+            \begin{itemize}
+                \item Neural State Machine for KBQA\footnote{Knowledge Base Question Answering (KBQA)}\cite{He-WSDM-2021}
+            \end{itemize}
+        \end{itemize}
+        \item Performance evaluation
+            \begin{itemize}
+                \item Measure the time and accuracy of each query and compare it to Stony Brook University's schedule builder\cite{sched}
+            \end{itemize}
+        \item Comparison of solutions
+            \begin{itemize}
+                \item Compare the output of the course schedules and recommendations with Stony Brook University graduation requirements (for select majors).
+            \end{itemize}
+    \end{itemize}
     
-    \section{Design}
-    \label{sec:design}
+    % example uses
+    \subsubsection{Example use-cases}
+    \label{subsubsec:example}
+    Moreover, the use cases of these solutions from this project are widely applicable to Stony Brook University's undergraduate, and graduate student populations as a whole. For example, these groups of students would find significant utility from this project's solutions:
+    \begin{itemize}
+        \item An undergraduate computer science student looking to meet the graduation requirements for a combined BS/MS in 5 years.
+        \item A MS graduate student in the computer science department looking to satisfy graduation requirements in 2 years, taking at  9--12 credits per semester.
+        \item A computer science PhD student looking to satisfy course and department policy requirements.
+    \end{itemize}
+
+    Granted the above use-cases were for computer science students -- ideally, most of the Stony Brook University student population would derive some benefit from this project.
+
+    \subsection{State of the art}
+    \label{subsec:sota}
+    Current state-of-the-art (SOTA) approaches for these problems at Stony Brook University include: the \href{https://you.stonybrook.edu/uaamedia/schedulebuilder/}{schedule builder} and \href{https://classie-evals.stonybrook.edu/}{classie-evals} (for course evaluations). In the case of the schedule builder -- it will mostly help students build a schedule, semester by semester\cite{sched}, but it will not recommend classes nor will it direct students to the course reviews to those classes. Additionally, using the schedule builder requires one to login into \href{https://it.stonybrook.edu/services/solar}{SOLAR}\cite{sched}. Currently, this is the best option for students creating schedules as it is widely available to Stony Brook students.
+    In the case of the classie-evals, it does a good job gathering course reviews in one place\cite{class} -- however, that information could be made more available during a student's schedule building process. Furthermore, this is the best option for students deciding on whether to take a course as this information is widely available to all Stony Brook students.
+    Current SOTA LLMs \cite{alpaca,touvron2023llama,touvron2023llama2,ye2023gpt3.5} have been shown to hallucinate (i.e. make very untrue statements and assert them as fact). Augmenting these LLMs as shown in \cite{luo2024} has demonstrated a viable approach to mitigating the hallucination issue that is common with LLMs. 
+
+    \subsection{Tasks \& Sub-tasks}
+    \label{subsec:tasks}
+    Currently, this project has no relation to any external projects (both through adjacent course work or for research purposes). Below are the are corresponding tasks and sub-tasks for the project:
+
+    \begin{itemize}
+        \item \textbf{Task 1}: Knowledge graph construction (via sub-graph extraction\cite{He-WSDM-2021})
+        \begin{itemize}
+            \item \textbf{Sub-task 1.1}: Create knowledge graphs of Stony Brook University undergraduate and graduate computer science graduation requirements (including department policies)
+            \item \textbf{Sub-task 1.2}: Automate this process (if possible)
+        \end{itemize}
+        \item \textbf{Task 2}: Build API
+        \begin{itemize}
+            \item \textbf{Sub-task 2.1}: Use the approach shown in \cite{luo2024} to augment some LLM \cite{alpaca,touvron2023llama,touvron2023llama2,ye2023gpt3.5}
+            \item \textbf{Sub-task 2.2}: Fine-tune the pre-trained LLM
+            \item \textbf{Sub-task 2.3}: Create output knowledge base that can be queried
+        \end{itemize}
+        \item \textbf{Task 3}: Test \& Evaluate
+        \begin{itemize}
+            \item \textbf{Sub-task 3.1}: Perform test queries using commonly asked questions
+            \item \textbf{Sub-task 3.2}: Evaluate performance (query time and accuracy)
+        \end{itemize}
+    \end{itemize}
+
+    \subsection{Project plan} 
+    \label{subsec:plan}
+    
+    The repository for the planned code base is located at this public \href{\repoLink}{GitHub repository}. Additionally, the planned timeline of the project is shown below in \fullref{tikz:timeline}, with each set of tasks and sub-tasks (subsection \ref{subsec:tasks}) as checkpoints.
+    
+    \input{timeline} \label{tikz:timeline}
+    
+    % \section{Design}
+    % \label{sec:design}
     
     % \section{Implementation}
     % \label{sec:implement}
