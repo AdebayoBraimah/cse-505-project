@@ -15,3 +15,7 @@ jobs:
         with:
           name: PDF
           path: Adebayo_Braimah_115099306_project.pdf
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PDF
+          path: Adebayo_Braimah_115099306_project.pdf
