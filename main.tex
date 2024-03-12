@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage{graphicx} % Required for inserting images
 
-% refs and bib
+% Refs and Bib
 \usepackage{cite}               % order multiple entries in \cite{...}
 \usepackage{breakurl}           % break too-long urls in refs
 \usepackage{url}                % allow \url in bibtex for clickable links
@@ -14,18 +14,58 @@
   urlcolor={blue!70!black}
 }
 
-% papar margins
+% \usepackage[%
+%   backend=bibtex      % biber or bibtex
+% %,style=authoryear    % Alphabeticalsch
+%  ,style=numeric-comp  % numerical-compressed
+%  ,sorting=none        % no sorting
+%  ,sortcites=true      % some other example options ...
+%  ,block=none
+%  ,indexing=false
+%  ,citereset=none
+%  ,isbn=true
+%  ,url=true
+%  ,doi=true            % prints doi
+%  ,natbib=true         % if you need natbib functions
+% ]{biblatex}
+% \addbibresource{refs.bib}  % better than \bibliography
+
+% Paragraph indentation control
+\usepackage{parskip}
+
+% Papar margins
 \usepackage[letterpaper,
             margin=1in,
             bottom=1in]{geometry}
 
-\title{Knowlege Graph Augmented Generative AI for Course Recommendation and Schedule Building}
-\author{Adebayo Braimah}
+% Title
+% \title{Knowledge Graph Augmented Generative AI for Course Recommendation and Schedule Building}
+% 
+%% make title bold and 14 pt font (Latex default is non-bold, 16 pt)
+\title{\Large \bf 
+Knowledge Graph Augmented Generative AI for Course Recommendation and Schedule Building
+}
+
+% Author(s) information
+% \author{Adebayo Braimah}
+\author{
+{\rm Adebayo Braimah}\\
+Stony Brook University \\
+{\rm ID Number: 115099306}
+% \and
+% {\rm Author 2}\\
+% Stony Brook University
+}
+
+% Date
 % \date{March 2024}
 \date{\today}
 
-\begin{document}
+% Variables
+\def \repoLink{https://github.com/AdebayoBraimah/CSE505}
 
+\begin{document}
+    
     % Title
     \maketitle
     
@@ -36,13 +76,17 @@
     % (1) the exact input and output desired, as an interface for how solutions to the problem can be used
     % (2) other requirements, such as tools allowed and performance, for evaluation and comparison of solutions
     % (3) example uses of the solutions in important and interesting applications.
-    Summary of inputs and outputs.
 
-    Inputs:
+    \textbf{Problem Description}: University course planning and understanding of graduation requirements can be a difficult process for new, in-coming students at all levels of one's education. Generally, new students are guided through this process by way of an academic advisor. However, this approach is expensive in both time and personnel (which are usually university faculty) -- especially in the case in which the personnel have to be trained on where to find and understand these graduation requirements. Additionally, in some cases -- the advising can be further complicated by the student's own personal interests (e.g. research focus, specific areas of interests, etc). The proposed solution to this problem would be a knowledge graph(s) augmented generative AI for course recommendation and schedule building. A summary of the inputs and outputs are shown below:
+
+    \textbf{Inputs}:
 
     \begin{itemize}
+        \label{items:inputs}
         \item Major (and minor if specified)
         \item Degree level(s): non-degree seeking, associates, bachelors, masters, doctorate
+        \item Current degree progress (e.g. classes already taken)
+        \item Preferred classes
         \item Preferred graduation timeline
         \item Knowledge graphs
         \begin{itemize}
@@ -54,21 +98,34 @@
         \end{itemize}
     \end{itemize}
 
-    Outputs:
+    \textbf{Outputs}:
 
     \begin{itemize}
-        \item Recommended schedule
+        \label{items:outputs}
+        \item Recommended schedules
         \item Course recommendations
+        \item Course reviews
     \end{itemize}
+
+    % Requirements
+    % example uses
+
+    \textbf{State of the art}: Current state-of-the-art (SOTA) approaches for these problems at Stony Brook University include: the \href{https://you.stonybrook.edu/uaamedia/schedulebuilder/}{schedule builder} and \href{https://classie-evals.stonybrook.edu/}{classie-evals} (for course evaluations). In the case of the schedule builder -- it will mostly help you build a schedule, semester by semester\cite{sched}, but it will not recommend classes nor will it direct you to the course reviews to those classes. Additionally, using the schedule builder requires one to login into \href{https://it.stonybrook.edu/services/solar}{SOLAR}\cite{sched}. In the case of the classie-evals, it does a good job gathering course reviews in one place\cite{class} -- however, that information could be made more available during a student's schedule building process.
+
+    \textbf{Tasks \& Sub-tasks}:
+
+    \textbf{Project plan}:
+
+    The repository for the planned code based is located at this public \href{\repoLink}{GitHub repository}.
     
     \section{Design}
     \label{sec:design}
     
-    \section{Implementation}
-    \label{sec:implement}
+    % \section{Implementation}
+    % \label{sec:implement}
     
-    \section{Testing \& Evaluation}
-    \label{sec:test_eval}
+    % \section{Testing \& Evaluation}
+    % \label{sec:test_eval}
 
     % Add newpage here to separate references from the
     % main text body
@@ -77,5 +134,7 @@
     % Bibliography & References
     \bibliographystyle{acm}
     \bibliography{refs}
+    
+    % \printbibliography
 
 \end{document}
