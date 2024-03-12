@@ -11,18 +11,10 @@ jobs:
         with:
           root_file: main.tex
       - name: Changing file permissions
-        run: chmod 755 file_sub.py
+        run: chmod 755 post_workflow.sh
       - name: Upload PDF file
         uses: actions/upload-artifact@v4
         with:
           name: PDF
           path: main.pdf
-          # run: |
-          # echo "Changing file permissions"
-          # chmod 755 file_sub.py
-          # echo "Changing PDF name"
-          # python ./file_sub.py -f main.pdf -e project
-          # echo "Uploading to GitHub"
-          # git add Adebayo_Braimah_115099306_project.pdf
-          # git commit -m "[skip actions] Auto WF: Document upload"
-          # git push origin main
+          run: ./post_workflow.sh
