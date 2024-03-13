@@ -124,8 +124,8 @@ Stony Brook University \\
         \begin{itemize}
             \item Python
             % \item Clingo (First-Order constraint solver)
-            \item ErgoAI (Knowledge graph querying)
-            \item LLMs (multiple are shown, likely only one will be used)
+            \item ErgoAI (Knowledge graph (KG) querying)
+            \item LLMs (large language models, multiple are shown -- likely only one will be used)
             \begin{itemize}
                 \item LLaMA\cite{touvron2023llama}/LLaMA-2\cite{touvron2023llama2}
                 \item Alpaca\cite{alpaca}
@@ -162,7 +162,7 @@ Stony Brook University \\
     \label{subsec:sota}
     Current state-of-the-art (SOTA) approaches for these problems at Stony Brook University include: the \href{https://you.stonybrook.edu/uaamedia/schedulebuilder/}{schedule builder} and \href{https://classie-evals.stonybrook.edu/}{classie-evals} (for course evaluations). In the case of the schedule builder -- it will mostly help students build a schedule, semester by semester\cite{sched}, but it will not recommend classes nor will it direct students to the course reviews to those classes. Additionally, using the schedule builder requires one to login into \href{https://it.stonybrook.edu/services/solar}{SOLAR}\cite{sched}. Currently, this is the best option for students creating schedules as it is widely available to Stony Brook students.
     In the case of the classie-evals, it does a good job gathering course reviews in one place\cite{class} -- however, that information could be made more available during a student's schedule building process. Furthermore, this is the best option for students deciding on whether to take a course as this information is widely available to all Stony Brook students.
-    Current SOTA LLMs \cite{alpaca,touvron2023llama,touvron2023llama2,ye2023gpt3.5} have been shown to hallucinate (i.e. make very untrue statements and assert them as fact). Augmenting these LLMs as shown in \cite{luo2024} has demonstrated a viable approach to mitigating the hallucination issue that is common with LLMs. {\color{red} Need to explain what LLM is doing e.g. is it used before or after the queries are made?}
+    Current SOTA LLMs \cite{alpaca,touvron2023llama,touvron2023llama2,ye2023gpt3.5} have been shown to hallucinate (i.e. make very untrue statements and assert them as fact). Augmenting these LLMs as shown in \cite{luo2024} using KGs has demonstrated a viable approach to mitigating the hallucination issue that is common with LLMs. The main purpose of using a LLM in this project is to support the feature of gathering and organizing the course recommendation information.
 
     \subsection{Tasks \& Sub-tasks}
     \label{subsec:tasks}
@@ -177,12 +177,12 @@ Stony Brook University \\
         \item \textbf{Task 2}: Build API
         \begin{itemize}
             \item \textbf{Sub-task 2.1}: Use the approach shown in \cite{luo2024} to augment a LLM \cite{alpaca,touvron2023llama,touvron2023llama2,ye2023gpt3.5}
-            \item \textbf{Sub-task 2.2}: Fine-tune the pre-trained LLM
+            \item \textbf{Sub-task 2.2}: Task specific fine-tuning of the pre-trained LLM
             \item \textbf{Sub-task 2.3}: Create output knowledge base that can be queried
         \end{itemize}
         \item \textbf{Task 3}: Test \& Evaluate
         \begin{itemize}
-            \item \textbf{Sub-task 3.1}: Perform test queries using commonly asked questions
+            \item \textbf{Sub-task 3.1}: Perform and automate test queries using commonly asked questions
             \item \textbf{Sub-task 3.2}: Evaluate performance (query time and accuracy)
         \end{itemize}
     \end{itemize}
