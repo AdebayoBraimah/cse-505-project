@@ -38,6 +38,46 @@
             margin=1in,
             bottom=1in]{geometry}
 
+% % Listing preferences
+% \usepackage{listings}
+% \usepackage{color}
+
+% %% Custom colors
+% \definecolor{deepblue}{rgb}{0,0,0.5}
+% \definecolor{deepred}{rgb}{0.6,0,0}
+% \definecolor{deepgreen}{rgb}{0,0.5,0}
+
+% % Python style for highlighting
+% \newcommand\pythonstyle{\lstset{
+% language=Python,
+% basicstyle=\ttm,
+% morekeywords={self},              % Add keywords here
+% keywordstyle=\ttb\color{deepblue},
+% emph={MyClass,__init__},          % Custom highlighting
+% emphstyle=\ttb\color{deepred},    % Custom highlighting style
+% stringstyle=\color{deepgreen},
+% frame=tb,                         % Any extra options here
+% showstringspaces=false
+% }}
+\usepackage{pythonhighlight}
+
+
+% % Python environment
+% \lstnewenvironment{python}[1][]
+% {
+% \pythonstyle
+% \lstset{#1}
+% }
+% {}
+
+% % Python for external files
+% \newcommand\pythonexternal[2][]{{
+% \pythonstyle
+% \lstinputlisting[#1]{#2}}}
+
+% % Python for inline
+% \newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
+
 % Timeline
 \usepackage{tikz}
 \usetikzlibrary{fit, calc, decorations.markings}
@@ -67,6 +107,7 @@ Stony Brook University \\
 
 % Variables
 \def \repoLink{https://github.com/AdebayoBraimah/CSE505}
+% TODO: Add link for project documentation
 
 % New commands
 \newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1}}}
@@ -192,19 +233,64 @@ Stony Brook University \\
     
     The repository for the planned code base is located at this public \href{\repoLink}{GitHub repository}. Additionally, the planned timeline of the project is shown below in \fullref{tikz:timeline}, with each set of tasks and sub-tasks (subsection \ref{subsec:tasks}) as checkpoints.
     
-    \input{timeline} \label{tikz:timeline}
+    \input{timeline} \label{tikz:timeline} \newpage
     
-    % \section{Design}
-    % \label{sec:design}
+    \section{Design}
+    \label{sec:design}
+
+    \subsection{API}
+    \label{subsec:api}
+
+    The driver program of this project can be run as shown from the command line:
+
+    {\tt{./app.py}}
+
+    Note, that file permissions may need to be changed for the file to run.
+
+    The outputs of the file are the results of the test query.
+
+    The contents of the {\tt{app.py}} file are as follows: \\
+
+    \begin{python}
+    import os
+    from src.ergoai.ergoai import query_ergoai
+    
+    test_file: str = os.path.abspath("foo.ergo")
+    query: str = "?Subject[?Property->?Object]"
+    
+    query_ergoai(knowledge=test_file, query=query)
+    \end{python}
+
+    \subsubsection{Implementation Details}
+    \label{subsubsec:implementation}
+
+    The implementation details of this project (at this point in time) mostly include simple test queries to ErgoAI.
+    
+
+    \subsection{Third Party Libraries}
+    \label{subsec:thirdparty}
+
+    At this point in time -- no third party libraries have been implemented in the design. However, third party libraries will be included later in the development process (e.g. knowledge graph creation, and the course recommendations).
+
+    \subsection{Documentation}
+    \label{subsec:docs}
+
+    The documentation of this project is contained in the {\tt{docs}} folder. Documentation will be written in reStructured Text ({\tt{.rst}}) files, and will be built using python via \href{https://www.sphinx-doc.org/en/master/}{Sphinx}.
     
     % \section{Implementation}
     % \label{sec:implement}
     
     % \section{Testing \& Evaluation}
     % \label{sec:test_eval}
-
+    
     % \section{Acknowledgements}
     % \label{sec:ack}
+
+    % TODO:
+    %   - Update acknowledgements section
+    %   - Include section that tracks changes or
+    %       at least mentions what was changed 
+    %       and why.
 
     % Add newpage here to separate references from the
     % main text body
