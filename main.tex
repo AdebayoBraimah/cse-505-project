@@ -82,6 +82,8 @@
 \usepackage{tikz}
 \usetikzlibrary{fit, calc, decorations.markings}
 
+% TODO: Change title to reflect changes in project.
+
 % Title
 % \title{Knowledge Graph Augmented Generative AI for Course Recommendation and Schedule Building}
 % 
@@ -107,7 +109,7 @@ Stony Brook University \\
 
 % Variables
 \def \repoLink{https://github.com/AdebayoBraimah/CSE505}
-% TODO: Add link for project documentation
+\def \docLink{https://cse505.readthedocs.io/en/latest/?badge=latest}
 
 % New commands
 \newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1}}}
@@ -116,7 +118,7 @@ Stony Brook University \\
     
     % Title
     \maketitle
-    
+        
     \section{Problem \& Plan}
     \label{sec:prob_plan}
     
@@ -234,7 +236,10 @@ Stony Brook University \\
     The repository for the planned code base is located at this public \href{\repoLink}{GitHub repository}. Additionally, the planned timeline of the project is shown below in \fullref{tikz:timeline}, with each set of tasks and sub-tasks (subsection \ref{subsec:tasks}) as checkpoints.
     
     \input{timeline} \label{tikz:timeline} \newpage
-    
+
+    % Design docs
+    % See this link for further details:
+    % https://github.com/aws/aws-sam-cli/blob/develop/designs/intrinsics_design.md
     \section{Design}
     \label{sec:design}
 
@@ -275,7 +280,7 @@ Stony Brook University \\
     \subsection{Documentation}
     \label{subsec:docs}
 
-    The documentation of this project is contained in the {\tt{docs}} folder. Documentation will be written in reStructured Text ({\tt{.rst}}) files, and will be built using python via \href{https://www.sphinx-doc.org/en/master/}{Sphinx}.
+    The documentation of this project is contained in the {\tt{doc}} folder. Documentation was also written in reStructured Text ({\tt{.rst}}) files, and built using python via \href{https://www.sphinx-doc.org/en/master/}{Sphinx} ({\tt{HTML}} documentation can be found in {\tt{doc/build/html/index.html}}). The {\tt{HTML}} documentation can found online \href{\docLink}{here} (recommended method of viewing this documentation).
     
     % \section{Implementation}
     % \label{sec:implement}
@@ -283,8 +288,8 @@ Stony Brook University \\
     % \section{Testing \& Evaluation}
     % \label{sec:test_eval}
     
-    % \section{Acknowledgements}
-    % \label{sec:ack}
+    \section{Acknowledgements}
+    \label{sec:ack}
 
     % TODO:
     %   - Update acknowledgements section
@@ -301,5 +306,20 @@ Stony Brook University \\
     \bibliography{refs}
     
     % \printbibliography
+
+    \newpage
+    
+    \section{Appendix}
+    \label{sec:appendix}
+
+    \subsection{Changelog (Change Log)}
+    \label{subsec:change}
+
+    % LLM
+    % Project scope
+    % Knowledge graph extraction
+    % Course review/recommendation
+    % Project external dependencies (link to documentation)
+    % Python dependencies (link to relevant docs/websites)
 
 \end{document}
