@@ -39,8 +39,24 @@
             bottom=1in]{geometry}
 
 % % Listing preferences
-% \usepackage{listings}
+\usepackage{listings}
 % \usepackage{color}
+
+% \lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+% \lstset{framextopmargin=50pt,frame=bottomline}
+
+\lstset
+{ %Formatting for code in appendix
+    basicstyle=\footnotesize\ttfamily,
+    numbers=left,
+    stepnumber=1,
+    showstringspaces=false,
+    % framextopmargin=50pt,
+    tabsize=1,
+    breaklines=true,
+    breakatwhitespace=false,
+    frame=bottomline
+}
 
 % %% Custom colors
 % \definecolor{deepblue}{rgb}{0,0,0.5}
@@ -89,8 +105,11 @@
 % 
 %% make title bold and 14 pt font (Latex default is non-bold, 16 pt)
 \title{\Large \bf 
-Knowledge Graph Augmented Generative AI for Course Recommendation and Schedule Building
+Knowledge Graph Querying for Course Schedule Building
 }
+% \title{\Large \bf 
+% Knowledge Graph Augmented Generative AI for Course Recommendation and Schedule Building
+% }
 
 % Author(s) information
 % \author{Adebayo Braimah}
@@ -105,11 +124,13 @@ Stony Brook University \\
 
 % Date
 % \date{March 2024}
-\date{\today}
+\date{April 21, 2024}
+% \date{\today}
 
 % Variables
 \def \repoLink{https://github.com/AdebayoBraimah/CSE505}
 \def \docLink{https://cse505.readthedocs.io/en/latest/?badge=latest}
+\def \desDocLink{https://docs.google.com/document/d/1t48in8rdzC_VOijfAOP23C_YgAQxkow5eaE7AXEVUYM/edit?usp=sharing}
 
 % New commands
 \newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1}}}
@@ -124,7 +145,7 @@ Stony Brook University \\
     
     \subsection{Problem Description}
     \label{subsec:problem}
-    University course planning and understanding of graduation requirements can be a difficult process for new, in-coming students at all levels of one's education. Generally, new students are guided through this process by way of an academic advisor. However, this approach is expensive in both time and personnel (which are usually university faculty) -- especially in the case in which the personnel have to be trained on where to find and understand these graduation requirements. Additionally, in some cases -- the advising can be further complicated by the student's own personal interests (e.g. research focus, specific areas of interests, etc). The proposed solution to this problem would be a knowledge graph(s) augmented generative AI for course recommendation and schedule building. A summary of the inputs and outputs are shown below:
+    University course planning and understanding of graduation requirements can be a difficult process for new, in-coming students at all levels of one's education. Generally, new students are guided through this process by way of an academic advisor. However, this approach is expensive in both time and personnel (which are usually university faculty) -- especially in the case in which the personnel have to be trained on where to find and understand these graduation requirements. Additionally, in some cases -- the advising can be further complicated by the student's own personal interests (e.g. research focus, specific areas of interests, etc). The proposed solution to this problem would be a knowledge graph(s) that are queried for course schedule building. A summary of the inputs and outputs are shown below:
 
     \subsubsection{Input \& Output}
     \label{subsubsec:in-out}
@@ -133,8 +154,8 @@ Stony Brook University \\
 
     \begin{itemize}
         \label{items:inputs}
-        \item Major (and minor if specified)
-        \item Degree level(s): non-degree seeking, associates, bachelors, masters, doctorate
+        \item Major
+        \item Degree level(s): bachelors, masters, doctorate
         \item Current degree progress (e.g. classes already taken)
         \item Preferred classes
         \item Preferred graduation timeline
@@ -154,7 +175,6 @@ Stony Brook University \\
         \label{items:outputs}
         \item Recommended schedules
         \item Course recommendations
-        \item Course reviews
     \end{itemize}
 
     % Requirements
@@ -166,18 +186,19 @@ Stony Brook University \\
         \item Tools
         \begin{itemize}
             \item Python
-            % \item Clingo (First-Order constraint solver)
-            \item ErgoAI (Knowledge graph (KG) querying)
-            \item LLMs (large language models, multiple are shown -- likely only one will be used)
             \begin{itemize}
-                \item LLaMA\cite{touvron2023llama}/LLaMA-2\cite{touvron2023llama2}
-                \item Alpaca\cite{alpaca}
-                \item Chat-GPT 3.5-turbo\cite{ye2023gpt3.5}
+                \item Selenium (for web scraping)
+                \item Pandas\cite{pandas} (for organizing data)
+                \item webdriver-manager (web browser interface)
             \end{itemize}
-            \item Sub-graph extraction
-            \begin{itemize}
-                \item Neural State Machine for KBQA\footnote{Knowledge Base Question Answering (KBQA)}\cite{He-WSDM-2021}
-            \end{itemize}
+            \item Clingo (ASP\footnote{Answer Set Programming} solver)\cite{clingo}
+            % \item ErgoAI (Knowledge graph (KG) querying)
+            % \item LLMs (large language models, multiple are shown -- likely only one will be used)
+            % \begin{itemize}
+            %     \item LLaMA\cite{touvron2023llama}/LLaMA-2\cite{touvron2023llama2}
+            %     \item Alpaca\cite{alpaca}
+            %     \item Chat-GPT 3.5-turbo\cite{ye2023gpt3.5}
+            % \end{itemize}
         \end{itemize}
         \item Performance evaluation
             \begin{itemize}
@@ -185,7 +206,7 @@ Stony Brook University \\
             \end{itemize}
         \item Comparison of solutions
             \begin{itemize}
-                \item Compare the output of the course schedules and recommendations with Stony Brook University graduation requirements (for select majors).
+                \item Compare the output of the course schedules and recommendations with Stony Brook University graduation requirements (for computer science majors).
             \end{itemize}
     \end{itemize}
     
@@ -203,25 +224,20 @@ Stony Brook University \\
 
     \subsection{State of the art}
     \label{subsec:sota}
-    Current state-of-the-art (SOTA) approaches for these problems at Stony Brook University include: the \href{https://you.stonybrook.edu/uaamedia/schedulebuilder/}{schedule builder} and \href{https://classie-evals.stonybrook.edu/}{classie-evals} (for course evaluations). In the case of the schedule builder -- it will mostly help students build a schedule, semester by semester\cite{sched}, but it will not recommend classes nor will it direct students to the course reviews to those classes. Additionally, using the schedule builder requires one to login into \href{https://it.stonybrook.edu/services/solar}{SOLAR}\cite{sched}. Currently, this is the best option for students creating schedules as it is widely available to Stony Brook students.
-    In the case of the classie-evals, it does a good job gathering course reviews in one place\cite{class} -- however, that information could be made more available during a student's schedule building process. Furthermore, this is the best option for students deciding on whether to take a course as this information is widely available to all Stony Brook students.
-    Current SOTA LLMs \cite{alpaca,touvron2023llama,touvron2023llama2,ye2023gpt3.5} have been shown to hallucinate (i.e. make very untrue statements and assert them as fact). Augmenting these LLMs as shown in \cite{luo2024} using KGs has demonstrated a viable approach to mitigating the hallucination issue that is common with LLMs. The main purpose of using a LLM in this project is to support the feature of gathering and organizing the course recommendation information.
+    Current state-of-the-art (SOTA) approaches for this problem at Stony Brook University includes the \href{https://you.stonybrook.edu/uaamedia/schedulebuilder/}{schedule builder}. In the case of the schedule builder -- it will mostly help students build a schedule, semester by semester\cite{sched}, but it will not recommend classes.
 
     \subsection{Tasks \& Sub-tasks}
     \label{subsec:tasks}
     Currently, this project has no relation to any external projects (both through adjacent course work and for research purposes). Below are the corresponding tasks and sub-tasks for the project:
 
     \begin{itemize}
-        \item \textbf{Task 1}: Knowledge graph construction (via sub-graph extraction\cite{He-WSDM-2021})
+        \item \textbf{Task 1}: Knowledge graph construction (via web scraping)
         \begin{itemize}
             \item \textbf{Sub-task 1.1}: Create knowledge graphs of Stony Brook University undergraduate and graduate computer science graduation requirements (including department policies)
-            \item \textbf{Sub-task 1.2}: Automate this process (if possible)
         \end{itemize}
         \item \textbf{Task 2}: Build API
         \begin{itemize}
-            \item \textbf{Sub-task 2.1}: Use the approach shown in \cite{luo2024} to augment a LLM \cite{alpaca,touvron2023llama,touvron2023llama2,ye2023gpt3.5}
-            \item \textbf{Sub-task 2.2}: Task specific fine-tuning of the pre-trained LLM
-            \item \textbf{Sub-task 2.3}: Create output knowledge base that can be queried
+            \item \textbf{Sub-task 2.1}: Create output knowledge base that can be queried.
         \end{itemize}
         \item \textbf{Task 3}: Test \& Evaluate
         \begin{itemize}
@@ -230,6 +246,9 @@ Stony Brook University \\
         \end{itemize}
     \end{itemize}
 
+    % Put arrow figure on next page
+    \newpage
+    
     \subsection{Project plan} 
     \label{subsec:plan}
     
@@ -246,50 +265,247 @@ Stony Brook University \\
     \subsection{API}
     \label{subsec:api}
 
+    The API implementation can be summarized as shown in the UML\footnote{Unified Modeling Language} diagram in Figure \ref{fig:uml-package} in addition to class structures for {\tt{KnowledgeBase}} and {\tt{KnowledgeGraph}} with their corresponding class attributes in Figure \ref{fig:uml-classes}.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[scale=0.75]{figures/uml/packages_src.png}
+        \caption{UML Diagram of the python package}
+        \label{fig:uml-package}
+    \end{figure}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[scale=0.55]{figures/uml/classes_src.png}
+        \caption{UML Diagram of the python package's classes and corresponding attributes.}
+        \label{fig:uml-classes}
+    \end{figure}
+
     The driver program of this project can be run as shown from the command line:
 
     {\tt{./app.py}}
 
     Note, that file permissions may need to be changed for the file to run.
 
-    The outputs of the file are the results of the test query.
+    The outputs of the file are the results of the test query, printed to the command line (truncated version of the file {\tt{src/resources/cse.schedule.lp}}, thus the unsatisfiable result): \\
 
-    The contents of the {\tt{app.py}} file are as follows: \\
+    \begin{verbatim}
+        UNSATISFIABLE
+        
+        Models       : 0
+        Calls        : 1
+        Time         : 5.358s (Solving: 5.35s 1st Model: 0.00s Unsat: 5.35s)
+        CPU Time     : 5.351s
+    \end{verbatim}
 
-    \begin{python}
-    import os
-    from src.ergoai.ergoai import query_ergoai
+    % \begin{python}
+    % import os
+    % from src.ergoai.ergoai import query_ergoai
     
-    test_file: str = os.path.abspath("foo.ergo")
-    query: str = "?Subject[?Property->?Object]"
+    % test_file: str = os.path.abspath("foo.ergo")
+    % query: str = "?Subject[?Property->?Object]"
     
-    query_ergoai(knowledge=test_file, query=query)
-    \end{python}
+    % query_ergoai(knowledge=test_file, query=query)
+    % \end{python}
 
     \subsubsection{Implementation Details}
     \label{subsubsec:implementation}
 
-    The implementation details of this project (at this point in time) mostly include simple test queries to ErgoAI.
+    The implementation details of this project are depicted in the UML diagrams shown in Figures \ref{fig:uml-package} and \ref{fig:uml-classes}. Moreover, the module {\tt{src.schedule}} is the main entry point into this program and takes the following input:
+
+    \begin{itemize}
+        \item A {\tt{KnowledgeBase}} object or a  {\tt{KnowledgeGraph}} object.
+        \begin{itemize}
+            \item {\tt{KnowledgeBase}}: Containing URL.
+            \item {\tt{KnowledgeGraph}}: Containing either a:
+            \begin{itemize}
+                \item JSON file
+                \item ErgoAI file
+                \item Clingo file
+                \item URL
+            \end{itemize}
+        \end{itemize}
+        \item Major (using Stony Brook's three designation, e.g. CSE)
+        \item Method (i.e. solver/approach to be used): Clingo in this case.
+    \end{itemize}
     
 
     \subsection{Third Party Libraries}
     \label{subsec:thirdparty}
 
-    At this point in time -- no third party libraries have been implemented in the design. However, third party libraries will be included later in the development process (e.g. knowledge graph creation, and the course recommendations).
+    The third party libraries currently used (mentioned in \ref{subsubsec:in-out}) include Selenium (for web scraping), Pandas (data organization prior to writing knowledge graphs), webdriver-manager (for browser interface) and Clingo (ASP solver, installed via (mini)conda).
 
     \subsection{Documentation}
     \label{subsec:docs}
 
     The documentation of this project is contained in the {\tt{doc}} folder. Documentation was also written in reStructured Text ({\tt{.rst}}) files, and built using python via \href{https://www.sphinx-doc.org/en/master/}{Sphinx} ({\tt{HTML}} documentation can be found in {\tt{doc/build/html/index.html}}). The {\tt{HTML}} documentation can found online \href{\docLink}{here} (recommended method of viewing this documentation).
+
+    \subsection{Design Document}
+    \label{subsec:design-docs}
+
+    The design document for this project is located \href{\desDocLink}{here in this Google Document}. The design document can be briefly summarized as:
+
+    \begin{itemize}
+        \item The project purpose: stating the problem, goals and those impacted (see section \ref{subsubsec:in-out}).
+        \item Project scope: What features will be built, and what features will not be implemented.
+        \item Stakeholders: The target audience, and those impacted by this project.
+        \item Requirements: Functional and non-functional requirements (see section \ref{subsubsec:reqs}).
+        \item Project timeline and milestones (see section \ref{subsec:plan}).
+        \item Architecture and system design (see Figures \ref{fig:uml-package} \& \ref{fig:uml-classes})
+        \item Test \& quality assurance: Test cases and queries that need to be covered.
+    \end{itemize}
     
-    % \section{Implementation}
-    % \label{sec:implement}
+    \section{Implementation}
+    \label{sec:implement}
+
+    \subsection{Design Implementation}
+    \label{subsec:des-imp}
+
+    The current design implementation has focused on translating knowledge graphs into facts. Correspondingly, knowledge bases were translated into rules. For example, the the class information shown in the JSON snippet below,  could be translated into the following fact:
+
+    \begin{lstlisting}
+    {
+        .
+        .
+        .
+        "CSE 214":{
+        "Course Title":"Data Structures",
+        "Career":"Undergraduate",
+        "Credits":4.0,
+        "Prerequisites":[
+            [
+                "CSE 114"
+            ]
+        ]
+    },
+    "CSE 215":{
+        "Course Title":"Foundations of Computer Science",
+        "Career":"Undergraduate",
+        "Credits":4.0,
+        "Prerequisites":[
+            [
+                "AMS 151",
+                "MAT 125",
+                "MAT 131"
+            ]
+        ]
+    },
+    .
+    .
+    .
+    }
+    \end{lstlisting}
+
+    Facts translation in Clingo (located in: {\tt{src/resources/cse.schedule.lp}})): \\
     
-    % \section{Testing \& Evaluation}
-    % \label{sec:test_eval}
+    \begin{lstlisting}
+        % Clingo code
+        % Define course(course_name, credits)
+        course(cse214, 4).
+        course(cse215, 4).
+        .
+        .
+        .
+        % Define prerequisites
+        % prerequisite(course_name, prerequisite)
+        prerequisite(cse214, cse114).
+        prerequisite(cse215, ams151).
+        prerequisite(cse215, mat125).
+        prerequisite(cse215, mat131).
+    \end{lstlisting}
+
+    Correspondingly, the knowledge base facts were translated into rules. For example, the fact a student needs take a minimum of 12 credits a semester, but a maximum of 15 credits over a $N$ semesters to graduate with 80 credits would be translated as the following in Clingo (in the same file, {\tt{src/resources/cse.schedule.lp}}): \\
+
+    \begin{lstlisting}
+        % Constants
+        min_credits_per_semester(12).
+        max_credits_per_semester(15).
+        total_required_credits(80).
+        
+        % Assign courses to semesters (1..N), N is an upper bound on semesters, guessed here as 10
+        semester(1..10).
+        
+        % Assign a course to exactly one semester
+        1 { in_semester(C, S) : semester(S) } 1 :- course(C, _).
+        
+        % Constraint to ensure the minimum number of credits per semester
+        :- semester(S), min_credits_per_semester(Min), #sum{Credits, C : course(C, Credits), in_semester(C, S)} < Min.
+        
+        % Ensure the total credits in each semester do not exceed the maximum allowed
+        :- semester(S), max_credits_per_semester(Max), #sum{Credits, C : course(C, Credits), in_semester(C, S)} > Max.
+        
+        % Ensuring all prerequisites are met
+        :- course(C, _), in_semester(C, SC), prerequisite(C, P), course(P, _), in_semester(P, SP), SP >= SC.
+        
+        % Define the maximum semester used
+        max_semester_used(M) :- M = #max{S : in_semester(_, S)}.
+        
+        % Minimize the number of semesters used
+        #minimize{M : max_semester_used(M)}.
+        
+        % Output control
+        #show in_semester/2.
+    \end{lstlisting}
+
+
+    \subsubsection{Design Issues \& Problems}
+    \label{subsubsec:des-iss-probs}
+
+    Currently, the way the queries are written are quite problematic. In addition to the rules and facts. As of right now, evaluation of the project is difficult. When the part of the knowledge graph consisting of undergraduate courses is used as input into Clingo (in the file {\tt{src/resources/cse.schedule.lp}}), the runtime was 37,801 secs. (10.5 hours)! The culprit is most likely in the way the queries have been written, in addition to the constraints. Conversely, ErgoAI would likely handle this problem much better -- however, translating facts into rules that can be queried with a knowledge graph has proven to be quite difficult.
+
+    \subsection{Design Documents (updated)}
+    \label{subsec:des-doc-up}
+
+    See section \ref{subsec:design-docs} for a summary of the design document. The design document can also be found \href{\desDocLink}{here in this Google Document}. The design document at this link has been updated in accordance with the specifications of this project.
+
+    \subsection{Project Implementation}
+    \label{subsec:proj-imp}
+
+    The project implementation can be found in the following code base, located at \href{\repoLink}{this GitHub Repository}. The development effort of the project required sizable effort -- especially in the parts pertaining to ErgoAI (which is not currently implemented). Below is a brief summary of the project:
+
+    \begin{itemize}
+        \item Languages
+        \begin{itemize}
+            \item Python
+            \begin{itemize}
+                \item Selenium
+                \item Pandas
+                \item webdriver-manager
+            \end{itemize}
+            \item Clingo
+            \item ErgoAI (not implemented, but attempted)
+        \end{itemize}
+        \item Tools
+            \begin{itemize}
+                \item Conda (python environment management)
+                \item Sphinx (automated documentation)
+                \item Graphviz \& PyLint (for creating UML diagrams)
+                \item Black (python code formatter)
+            \end{itemize}
+        \item Development effort: Fairly sizable, especially in reference to ErgoAI (not implemented).
+        \item Code base size: moderately sized at 32,597 lines of code.
+    \end{itemize}
+
+    Lastly, this project, in its current state significantly lags behind the SOTA approaches.
+    
+    \section{Testing \& Evaluation}
+    \label{sec:test_eval}
+
+    No official tests have been run yet -- as evaluation has been difficult (see section \ref{subsubsec:des-iss-probs} for further details). In the project's current state, evaluation is a tricky endeavor. Moreover, the tests that remain to be written and performed include:
+
+    \begin{itemize}
+        \item Unit tests
+        \item Reachability
+        \item Cycle detection
+    \end{itemize}
     
     \section{Acknowledgements}
     \label{sec:ack}
+
+    \begin{itemize}
+        \item Prof. Annie Liu for the project idea and insights
+        \item Geoffrey Churchill for discussions and insights
+    \end{itemize}
 
     % TODO:
     %   - Update acknowledgements section
@@ -322,5 +538,23 @@ Stony Brook University \\
     % Project external dependencies (link to documentation)
     % Python dependencies (link to relevant docs/websites)
     % Mention web-scraper
+
+    \begin{itemize}
+        \item Removed/exchanged these tools and features:
+        \begin{itemize}
+            \item Large Language Models (LLMs) were removed.
+            \item Sub-graph extraction (via Neural State Machine for Knowledge Base Question Answering) was exchanged for just scraping Stony Brook's SOLAR course catalog for knowledge graph creation.
+            \item Automated rule creation from knowledge base was removed (outside the scope of this project).
+            \item Course reviews feature was removed.
+            \item ErgoAI was exchanged for Clingo.
+        \end{itemize}
+        \item Design Document
+        \begin{itemize}
+            \item Linked a Google Document with the relevant information and details.
+            \item Added UML diagrams to pictorially describe the project's code base.
+            \item Added more explicit design and implementation details.
+            \item Updated third party libraries and external dependencies used.
+        \end{itemize}
+    \end{itemize}
 
 \end{document}
