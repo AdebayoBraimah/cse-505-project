@@ -2,6 +2,7 @@
 \usepackage{graphicx} % Required for inserting images
 
 % Refs and Bib
+\usepackage{amsmath}
 \usepackage{cite}               % order multiple entries in \cite{...}
 \usepackage{breakurl}           % break too-long urls in refs
 \usepackage{url}                % allow \url in bibtex for clickable links
@@ -145,7 +146,8 @@ Stony Brook University \\
     
     \subsection{Problem Description}
     \label{subsec:problem}
-    University course planning and understanding of graduation requirements can be a difficult process for new, in-coming students at all levels of one's education. Generally, new students are guided through this process by way of an academic advisor. However, this approach is expensive in both time and personnel (which are usually university faculty) -- especially in the case in which the personnel have to be trained on where to find and understand these graduation requirements. Additionally, in some cases -- the advising can be further complicated by the student's own personal interests (e.g. research focus, specific areas of interests, etc). The proposed solution to this problem would be knowledge graphs that are queried for course schedule building. A summary of the inputs and outputs are shown below:
+    Scheduling is a highly non-trivial problem that arises in throughout many fields and industrial applications. Several examples include the job-scheduling problem\cite{scheduling1972}, and the nurse scheduling problem\cite{nurse2017}.
+    University course planning/scheduling and understanding of graduation requirements can be a difficult process for new, in-coming students at all levels of one's education\cite{lunch2023}. Generally, new students are guided through this process by way of an academic advisor. However, this approach is expensive in both time and personnel (which are usually university faculty) -- especially in the case in which the personnel have to be trained on where to find and understand these graduation requirements. Additionally, in some cases -- the advising can be further complicated by the student's own personal interests (e.g. research focus, specific areas of interests, etc). The proposed solution to this problem would be knowledge graphs that are queried for course schedule building. A summary of the inputs and outputs are shown below:
 
     \subsubsection{Input \& Output}
     \label{subsubsec:in-out}
@@ -155,10 +157,8 @@ Stony Brook University \\
     \begin{itemize}
         \label{items:inputs}
         \item Major
-        \item Degree level(s): bachelors, masters, doctorate
+        \item Degree level: bachelors (masters and doctorate are not implemented in this project)
         \item Current degree progress (e.g. classes already taken)
-        \item Preferred classes
-        \item Preferred graduation timeline
         \item Knowledge graphs
         \begin{itemize}
             \item Graduation requirements
@@ -173,7 +173,7 @@ Stony Brook University \\
 
     \begin{itemize}
         \label{items:outputs}
-        \item Recommended schedules
+        \item Recommended schedule(s)
         \item Course recommendations
     \end{itemize}
 
@@ -187,9 +187,10 @@ Stony Brook University \\
         \begin{itemize}
             \item Python
             \begin{itemize}
-                \item Selenium (for web scraping)
+                \item Selenium (for web scraping, and web browser interface)
+                \item BeautifulSoup4 (for web scraping) 
+                \item requests (for web scraping)
                 \item Pandas\cite{pandas} (for organizing data)
-                \item webdriver-manager (web browser interface)
             \end{itemize}
             \item Clingo (ASP\footnote{Answer Set Programming} solver)\cite{clingo}
             % \item ErgoAI (Knowledge graph (KG) querying)
@@ -224,7 +225,7 @@ Stony Brook University \\
 
     \subsection{State of the art}
     \label{subsec:sota}
-    Current state-of-the-art (SOTA) approaches for this problem at Stony Brook University includes the \href{https://you.stonybrook.edu/uaamedia/schedulebuilder/}{schedule builder}. In the case of the schedule builder -- it will mostly help students build a schedule, semester by semester\cite{sched}, but it will not recommend classes.
+    Current state-of-the-art (SOTA) approaches for this problem at Stony Brook University includes the \href{https://you.stonybrook.edu/uaamedia/schedulebuilder/}{schedule builder} in addition to LUNCH\cite{lunch2023}. In the case of LUNCH, while it is a mostly automated approach -- it does require significant user input, and only provides the schedule for one semester. In the case of the schedule builder -- it will mostly help students build a schedule, semester by semester\cite{sched}, but it will not recommend classes.
 
     \subsection{Tasks \& Sub-tasks}
     \label{subsec:tasks}
@@ -265,6 +266,8 @@ Stony Brook University \\
     \subsection{API}
     \label{subsec:api}
 
+    % TODO: Re-write this section
+    
     The API implementation can be summarized as shown in the UML\footnote{Unified Modeling Language} diagram in Figure \ref{fig:uml-package} in addition to class structures for {\tt{KnowledgeBase}} and {\tt{KnowledgeGraph}} with their corresponding class attributes in Figure \ref{fig:uml-classes}.
 
     \begin{figure}[h!]
@@ -311,7 +314,9 @@ Stony Brook University \\
     \subsubsection{Implementation Details}
     \label{subsubsec:implementation}
 
-    The implementation details of this project are depicted in the UML diagrams shown in Figures \ref{fig:uml-package} and \ref{fig:uml-classes}. Moreover, the module {\tt{src.schedule}} is the main entry point into this program and takes the following input:
+    % TODO: Update details here
+    
+    The implementation details of this project are depicted in the UML diagrams shown in Figures \ref{fig:uml-package} and \ref{fig:uml-classes}. Moreover, the package {\tt{src.scheduler}} is the main entry point into this program and takes the following input:
 
     \begin{itemize}
         \item A {\tt{KnowledgeBase}} object or a  {\tt{KnowledgeGraph}} object.
@@ -320,7 +325,7 @@ Stony Brook University \\
             \item {\tt{KnowledgeGraph}}: Containing either a:
             \begin{itemize}
                 \item JSON file
-                \item ErgoAI file
+                \item ErgoAI file (not fully supported)
                 \item Clingo file
                 \item URL
             \end{itemize}
@@ -328,6 +333,27 @@ Stony Brook University \\
         \item Major (using Stony Brook's three designation, e.g. CSE)
         \item Method (i.e. solver/approach to be used): Clingo in this case.
     \end{itemize}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.5]{figures/design/kb_to_kg_json.png}
+        \caption{Design flowchart of knowledge base to knowledge graph creation, performed via web scraping of Stony Brook University's online course catalog.}
+        \label{fig:kb-kg}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.5]{figures/design/json_to_clingo_kg.png}
+        \caption{Design flowchart of JSON knowledge graph conversion to a clingo knowledge graph.}
+        \label{fig:kg-clingo}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.5]{figures/design/kg_kb_query.png}
+        \caption{Design flowchart of knowledge base and knowledge graph querying via Clingo.}
+        \label{fig:kb-query}
+    \end{figure}
     
 
     \subsection{Third Party Libraries}
@@ -351,8 +377,8 @@ Stony Brook University \\
         \item Stakeholders: The target audience, and those impacted by this project.
         \item Requirements: Functional and non-functional requirements (see section \ref{subsubsec:reqs}).
         \item Project timeline and milestones (see section \ref{subsec:plan}).
-        \item Architecture and system design (see Figures \ref{fig:uml-package} \& \ref{fig:uml-classes})
-        \item Test \& quality assurance: Test cases and queries that need to be covered.
+        \item Architecture and system design (see Figures: \ref{fig:uml-package}, \ref{fig:uml-classes}, \ref{fig:kb-kg}, \ref{fig:kg-clingo} \& \ref{fig:kb-query})
+        \item Test \& quality assurance: Test cases and queries that need to be covered (see section \ref{sec:test-eval}).
     \end{itemize}
     
     \section{Implementation}
@@ -396,62 +422,115 @@ Stony Brook University \\
     }
     \end{lstlisting}
 
-    Facts translation in Clingo (located in: {\tt{src/resources/cse.schedule.lp}})): \\
+    Facts translation in Clingo (located in: {\tt{src/resources/cse\_courses.lp}})): \\
     
     \begin{lstlisting}
         % Clingo code
-        % Define course(course_name, credits)
-        course(cse214, 4).
-        course(cse215, 4).
+        % Define course(course_name, credits, career, offered_spring, offered_fall)
+        course(cse214, 4, "Undergraduate", 1, 1).
+        course(cse215, 4, "Undergraduate", 1, 1).
         .
         .
         .
         % Define prerequisites
-        % prerequisite(course_name, prerequisite)
-        prerequisite(cse214, cse114).
-        prerequisite(cse215, ams151).
-        prerequisite(cse215, mat125).
-        prerequisite(cse215, mat131).
+        .
+        .
+        .
+        % Prerequisites for CSE214
+        :- course(cse214, 4, "Undergraduate", 1, 1), 
+           not course(cse114, _, "Undergraduate", _, _). 
+        
+        % Prerequisites for CSE215
+        :- course(cse215, 4, "Undergraduate", 1, 1), 
+           not course(ams151, _, "Undergraduate", _, _), 
+           not course(mat125, _, "Undergraduate", _, _), 
+           not course(mat131, _, "Undergraduate", _, _). 
     \end{lstlisting}
 
-    Correspondingly, the knowledge base facts were translated into rules. For example, the fact a student needs take a minimum of 12 credits a semester, but a maximum of 15 credits over a $N$ semesters to graduate with 80 credits would be translated as the following in Clingo (in the same file, {\tt{src/resources/cse.schedule.lp}}): \\
+    Correspondingly, the knowledge base facts were translated into rules. For example, the fact a student needs take a minimum of 12 credits a semester (to maintain full time student status, shown on line 3 in the listing below as a constant), but a maximum of 18 credits (shown on line 4 as constant in the listing below) over $N$ semesters to graduate with CSE major 80 credits and 120 total credits would be translated as the following in Clingo (in the file, {\tt{results/cse\_bs\_grad\_reqs.lp}}): \\
 
     \begin{lstlisting}
         % Constants
-        min_credits_per_semester(12).
-        max_credits_per_semester(15).
-        total_required_credits(80).
+        #const max_semesters = 12.
+        #const min_credits_per_semester = 12.
+        #const max_credits_per_semester = 18.
         
-        % Assign courses to semesters (1..N), N is an upper bound on semesters, guessed here as 10
-        semester(1..10).
+        % Define possible semesters
+        semester(1..max_semesters).
         
-        % Assign a course to exactly one semester
-        1 { in_semester(C, S) : semester(S) } 1 :- course(C, _).
+        % Schedule courses across semesters
+        1 { schedule(Course, Sem) : semester(Sem) } 1 :- course(Course, Credits, Career, Spring, Fall).
         
-        % Constraint to ensure the minimum number of credits per semester
-        :- semester(S), min_credits_per_semester(Min), #sum{Credits, C : course(C, Credits), in_semester(C, S)} < Min.
+        % Prevent scheduling of courses already taken
+        :- course_taken(Course), schedule(Course, _).
         
-        % Ensure the total credits in each semester do not exceed the maximum allowed
-        :- semester(S), max_credits_per_semester(Max), #sum{Credits, C : course(C, Credits), in_semester(C, S)} > Max.
+        % Semester limits: at least 12 credits and at most 18 credits per semester
+        :- semester(Sem), SemCredits = #count { Credits, Course : schedule(Course, Sem), course(Course, Credits, "Undergraduate", _, _) }, SemCredits < min_credits_per_semester.
+        :- semester(Sem), SemCredits = #count { Credits, Course : schedule(Course, Sem), course(Course, Credits, "Undergraduate", _, _) }, SemCredits > max_credits_per_semester.
+
+        % Ensure all scheduled courses comply with seasonal offerings
+        :- schedule(Course, Sem), course(Course, _, "Undergraduate", Spring, Fall), 
+           Sem \ 2 = 1, Fall = 0.
+        :- schedule(Course, Sem), course(Course, _, "Undergraduate", Spring, Fall), 
+           Sem \ 2 = 0, Spring = 0.
         
-        % Ensuring all prerequisites are met
-        :- course(C, _), in_semester(C, SC), prerequisite(C, P), course(P, _), in_semester(P, SP), SP >= SC.
+        % Count total credits and major credits
+        total_credits(Total) :- Total = #sum { Credits, Course : schedule(Course, _), course(Course, Credits, "Undergraduate", _, _) }.
+        major_credits(Major) :- Major = #sum { Credits, Course : schedule(Course, _), course(Course, Credits, "Undergraduate", _, _) }.
         
-        % Define the maximum semester used
-        max_semester_used(M) :- M = #max{S : in_semester(_, S)}.
+        % Graduation requirements
+        :- total_credits(Total), Total < 120.
+        :- major_credits(Major), Major < 80.
         
-        % Minimize the number of semesters used
-        #minimize{M : max_semester_used(M)}.
+        % Objective to minimize the number of semesters
+        #minimize { 1, Sem : schedule(_, Sem) }.
         
-        % Output control
-        #show in_semester/2.
+        #show schedule/2.
+    \end{lstlisting}
+
+    Moreover, the above code suffers from combinatorial explosion (i.e. the number of combinations that satisfies the model are so large, that the optimal model would take a significant amount of time to be computed).
+    Instead, computing the schedule of two semesters is far more feasible. The code to do so is located in the file {\tt{results/sem.lp}}): \\
+
+    \begin{lstlisting}
+        % Semester definition
+        semester(spring).
+        semester(fall).
+        
+        % Scheduling a course in a semester
+        { schedule(Course, spring) : course(Course, Credits, Career, 1, OfferedFall) } :-
+            not course_taken(Course).
+        
+        { schedule(Course, fall) : course(Course, Credits, Career, OfferedSpring, 1) } :-
+            not course_taken(Course).
+        
+        % Credit calculation per semester
+        credits_sum(Sem, TotalCredits) :-
+            semester(Sem),
+            TotalCredits = #sum { Credits, Course : schedule(Course, Sem), course(Course, Credits, _, _, _) }.
+        
+        % Enforce credit limits
+        :- credits_sum(Sem, TotalCredits), TotalCredits < 12.
+        :- credits_sum(Sem, TotalCredits), TotalCredits > 18.
+        
+        % Output directives to facilitate result interpretation
+        #show schedule/2.
     \end{lstlisting}
 
 
     \subsubsection{Design Issues \& Problems}
     \label{subsubsec:des-iss-probs}
 
-    Currently, the way the queries are written are quite problematic. In addition to the rules and facts. As of right now, evaluation of the project is difficult. When the part of the knowledge graph consisting of undergraduate courses is used as input into Clingo (in the file {\tt{src/resources/cse.schedule.lp}}), the runtime was 37,801 secs. (10.5 hours)! The culprit is most likely in the way the queries have been written, in addition to the constraints. Conversely, ErgoAI would likely handle this problem much better -- however, translating facts into rules that can be queried with a knowledge graph has proven to be quite difficult.
+    The query written in {\tt{results/cse\_bs\_grad\_reqs.lp}} suffered from grounding overhead, and combinatorial explosion in Clingo. These two issues in particular were likely caused by the large input of course atoms (about 207 listed undergraduate and graduate courses, in addition to their corresponding pre- and co-requisites). From the combination defined in Eq. \ref{eq:combo}, and assuming that an undergraduate student could take anywhere between 4 and 6 courses (with the basic assumption that each course averages to about 3 credits), then there would exist anywhere between $1.457 \cdot 10^6$ to $7.430 \cdot 10^7$ possible models.
+
+    \begin{equation}
+        \begin{aligned}
+            C(n, k) & = \binom{n}{k} \\
+            & =\frac{n!}{k!(n-k)!}
+        \end{aligned}
+        \label{eq:combo}
+    \end{equation}
+
+    With such a significantly large search space of 207 courses -- these large number of possible models make sense, further clarifying the extremely long runtime of {\tt{results/cse\_bs\_grad\_reqs.lp}}, for computing all possible course schedules.
 
     \subsection{Design Documents (updated)}
     \label{subsec:des-doc-up}
@@ -489,15 +568,15 @@ Stony Brook University \\
     Lastly, this project, in its current state significantly lags behind the SOTA approaches.
     
     \section{Testing \& Evaluation}
-    \label{sec:test_eval}
+    \label{sec:test-eval}
 
-    No official tests have been run yet -- as evaluation has been difficult (see section \ref{subsubsec:des-iss-probs} for further details). In the project's current state, evaluation is a tricky endeavor. Moreover, the tests that remain to be written and performed include:
+    % No official tests have been run yet -- as evaluation has been difficult (see section \ref{subsubsec:des-iss-probs} for further details). In the project's current state, evaluation is a tricky endeavor. Moreover, the tests that remain to be written and performed include:
+
+    The set of tests that have been performed include: 
 
     \begin{itemize}
-        \item Unit tests
-        \item Reachability
-        \item Cycle detection
-        \item Performance \& Correctness
+        \item Unit tests (for utility functions)
+        \item Performance \& Correctness (performed via manual creation of course schedule)
     \end{itemize}
     
     \section{Acknowledgements}
@@ -532,13 +611,30 @@ Stony Brook University \\
     \subsection{Changelog (Change Log)}
     \label{subsec:change}
 
-    % LLM
-    % Project scope
-    % Knowledge graph extraction
-    % Course review/recommendation
-    % Project external dependencies (link to documentation)
-    % Python dependencies (link to relevant docs/websites)
-    % Mention web-scraper
+    The most recent/changes updates are at the top.
+
+    \subsubsection{May 10, 2024}
+
+    % Inputs
+    % Decreased number of inputs and complexity of inputs
+    % only focusing on bs degerees
+    % Removed preferred classes
+    % 
+    % Outputs
+    % Added BeutifulSoup 4, reomved web-driver, its sub-package of selenium
+    % 
+    % Removed possible use of ErgoAI
+    
+    % Mention narrowed scope of project
+    % Mention combinatorial explosion
+    % Only focus on one semester
+    % Included tests
+
+    \begin{itemize}
+        \item 
+    \end{itemize}
+
+    \subsubsection{April 26, 2024}
 
     \begin{itemize}
         \item Removed/exchanged these tools and features:
