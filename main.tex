@@ -125,7 +125,7 @@ Stony Brook University \\
 
 % Date
 % \date{March 2024}
-\date{April 21, 2024}
+\date{May 10, 2024}
 % \date{\today}
 
 % Variables
@@ -214,18 +214,17 @@ Stony Brook University \\
     % example uses
     \subsubsection{Example use-cases}
     \label{subsubsec:example}
-    Moreover, the use cases of these solutions from this project are widely applicable to Stony Brook University's undergraduate, and graduate student populations as a whole. For example, these groups of students would find significant utility from this project's solutions:
+    Moreover, the use cases of these solutions from this project is widely applicable to Stony Brook University's undergraduate student population as a whole. For example, these groups of students would find significant utility from this project's solutions:
     \begin{itemize}
         \item An undergraduate computer science student looking to meet the graduation requirements for a combined BS/MS in 5 years.
-        \item A MS graduate student in the computer science department looking to satisfy graduation requirements in 2 years, taking 9--12 credits per semester.
-        \item A computer science PhD student looking to satisfy course and department policy requirements prior to candidacy.
+        \item A BS graduate student in the computer science department looking to satisfy graduation requirements in 4 years, taking 12--15 credits per semester.
     \end{itemize}
 
-    Granted the above use-cases were for computer science students -- ideally, most of the Stony Brook University student population would derive some benefit from this project.
+    Granted the above use-cases were for computer science students -- ideally, most of the Stony Brook University student population could derive some benefit from this project.
 
     \subsection{State of the art}
     \label{subsec:sota}
-    Current state-of-the-art (SOTA) approaches for this problem at Stony Brook University includes the \href{https://you.stonybrook.edu/uaamedia/schedulebuilder/}{schedule builder} in addition to LUNCH\cite{lunch2023}. In the case of LUNCH, while it is a mostly automated approach -- it does require significant user input, and only provides the schedule for one semester. In the case of the schedule builder -- it will mostly help students build a schedule, semester by semester\cite{sched}, but it will not recommend classes.
+    Current state-of-the-art (SOTA) approaches for this problem at Stony Brook University includes the \href{https://you.stonybrook.edu/uaamedia/schedulebuilder/}{schedule builder} in addition to LUNCH\cite{lunch2023}. In the case of LUNCH, while it is a mostly automated approach -- it does require significant user input, and only provides the schedule for one semester. In the case of the schedule builder -- it will mostly help students build a schedule, semester by semester\cite{sched}, but it will not recommend/suggest classes.
 
     \subsection{Tasks \& Sub-tasks}
     \label{subsec:tasks}
@@ -268,18 +267,25 @@ Stony Brook University \\
 
     % TODO: Re-write this section
     
-    The API implementation can be summarized as shown in the UML\footnote{Unified Modeling Language} diagram in Figure \ref{fig:uml-package} in addition to class structures for {\tt{KnowledgeBase}} and {\tt{KnowledgeGraph}} with their corresponding class attributes in Figure \ref{fig:uml-classes}.
+    The API implementation can be summarized as shown in the UML\footnote{Unified Modeling Language} diagram in Figure \ref{fig:uml-package} in addition to class structures for {\tt{KnowledgeBase}} and {\tt{KnowledgeGraph}} with their corresponding class attributes in Figure \ref{fig:uml-classes}. The overall system design can be described in three major components: 
+
+    \begin{enumerate}
+        \item Knowledge graph construction from SBU course catalog (described in Figure \ref{fig:kb-kg}).
+        \item Converting JSON knowledge graph to Clingo atoms and predicates (described in Figure \ref{fig:kg-clingo}).
+        \item Query the knowledge base of course requirements(described in Figure \ref{fig:kb-query}).
+    \end{enumerate}
+
 
     \begin{figure}[h!]
         \centering
-        \includegraphics[scale=0.75]{figures/uml/packages_src.png}
+        \includegraphics[scale=0.65]{figures/uml/packages_src.png}
         \caption{UML Diagram of the python package}
         \label{fig:uml-package}
     \end{figure}
 
     \begin{figure}[h!]
         \centering
-        \includegraphics[scale=0.55]{figures/uml/classes_src.png}
+        \includegraphics[scale=0.4]{figures/uml/classes_src.png}
         \caption{UML Diagram of the python package's classes and corresponding attributes.}
         \label{fig:uml-classes}
     \end{figure}
@@ -316,22 +322,23 @@ Stony Brook University \\
 
     % TODO: Update details here
     
-    The implementation details of this project are depicted in the UML diagrams shown in Figures \ref{fig:uml-package} and \ref{fig:uml-classes}. Moreover, the package {\tt{src.scheduler}} is the main entry point into this program and takes the following input:
+    The implementation details of this project are depicted in the UML diagrams shown in Figures \ref{fig:uml-package} and \ref{fig:uml-classes}. Moreover, the package {\tt{./src/schedule.py}}\footnote{NOTE: Should more help be needed, type: {\tt{./src/schedule.py -h}} for the full help menu.} is the main entry point into this program, with a command line interface (CLI) and three sub-commands: {\tt{graph}}, {\tt{convert}}, and {\tt{query}}\footnote{NOTE: Although {\tt{ErgoAI}} is available in the option menu, it is not fully supported, especially for query execution.}. These sub-commands are described in more detail below (required arguments only):
 
     \begin{itemize}
-        \item A {\tt{KnowledgeBase}} object or a  {\tt{KnowledgeGraph}} object.
+        \item {\tt{graph}}
         \begin{itemize}
-            \item {\tt{KnowledgeBase}}: Containing URL.
-            \item {\tt{KnowledgeGraph}}: Containing either a:
-            \begin{itemize}
-                \item JSON file
-                \item ErgoAI file (not fully supported)
-                \item Clingo file
-                \item URL
-            \end{itemize}
+            \item major ('CSE' for most examples)
         \end{itemize}
-        \item Major (using Stony Brook's three designation, e.g. CSE)
-        \item Method (i.e. solver/approach to be used): Clingo in this case.
+        \item {\tt{convert}}
+        \begin{itemize}
+            \item json-file (The output from the above step)
+            \item {\tt{clingo}} (We want the output file to consist of clingo atoms and predicates)
+        \end{itemize}
+        \item {\tt{query}}
+        \begin{itemize}
+            \item knowledge (input knowledge base/graph to be queried) 
+            \item query (input query string or file that contains rules/queries to be executed, may be specified multiple times)
+        \end{itemize}
     \end{itemize}
 
     \begin{figure}
@@ -359,7 +366,7 @@ Stony Brook University \\
     \subsection{Third Party Libraries}
     \label{subsec:thirdparty}
 
-    The third party libraries currently used (mentioned in \ref{subsubsec:in-out}) include Selenium (for web scraping), Pandas (data organization prior to writing knowledge graphs), webdriver-manager (for browser interface) and Clingo (ASP solver, installed via (mini)conda).
+    The third party libraries currently used (mentioned in \ref{subsubsec:in-out}) include Selenium (for web scraping, and browser interface), Pandas (data organization prior to writing knowledge graphs), BeautifulSoup4 (for web scraping) and Clingo (ASP solver, installed via (mini)conda).
 
     \subsection{Documentation}
     \label{subsec:docs}
@@ -387,133 +394,143 @@ Stony Brook University \\
     \subsection{Design Implementation}
     \label{subsec:des-imp}
 
-    The current design implementation has focused on translating knowledge graphs into facts. Correspondingly, knowledge bases were translated into rules. For example, the the class information shown in the JSON snippet below,  could be translated into the following fact:
+    The current design implementation has focused on translating knowledge graphs into facts. Correspondingly, knowledge bases were translated into rules. For example, the the class information shown in the JSON snippet below,  could be translated into the following fact\footnote{NOTE: JSON fields "spring" and "fall" entail if the course is offered in the spring and/or in the fall (i.e. 1 implies offered, 0 implies not offered).}:
 
     \begin{lstlisting}
-    {
-        .
-        .
-        .
-        "CSE 214":{
-        "Course Title":"Data Structures",
+{
+    .
+    .
+    .
+    "CSE214":{
+    "CourseTitle":"Data Structures",
+    "Career":"Undergraduate",
+    "Credits":4.0,
+    "Prerequisites":[
+        [
+            "CSE114"
+        ]
+    ],
+    "Antirequisites":"NONE",
+    "Corequisites":"NONE",
+    "Description":"An extension of programming methodology to data storage and manipulation on complex data sets. Topics include: programming and applications of data structures; stacks, queues, lists, binary trees, heaps, priority queues, balanced trees and graphs. Recursive programming is heavily utilized. Fundamental sorting and searching algorithms are examined along with informal efficiency comparisons.",
+    "spring":1.0,
+    "fall":1.0
+    },
+    "CSE215":{
+        "CourseTitle":"Foundations of Computer Science",
         "Career":"Undergraduate",
         "Credits":4.0,
         "Prerequisites":[
             [
-                "CSE 114"
+                "AMS151",
+                "MAT125",
+                "MAT131"
             ]
-        ]
+        ],
+        "Antirequisites":"NONE",
+        "Corequisites":"NONE",
+        "Description":"Introduction to the logical and mathematical foundations of computer science. Topics include functions, relations, and sets; recursion; elementary logic; and mathematical induction and other proof techniques.",
+        "spring":1.0,
+        "fall":1.0
     },
-    "CSE 215":{
-        "Course Title":"Foundations of Computer Science",
-        "Career":"Undergraduate",
-        "Credits":4.0,
-        "Prerequisites":[
-            [
-                "AMS 151",
-                "MAT 125",
-                "MAT 131"
-            ]
-        ]
-    },
-    .
-    .
-    .
-    }
+.
+.
+.
+}
     \end{lstlisting}
 
     Facts translation in Clingo (located in: {\tt{src/resources/cse\_courses.lp}})): \\
     
     \begin{lstlisting}
-        % Clingo code
-        % Define course(course_name, credits, career, offered_spring, offered_fall)
-        course(cse214, 4, "Undergraduate", 1, 1).
-        course(cse215, 4, "Undergraduate", 1, 1).
-        .
-        .
-        .
-        % Define prerequisites
-        .
-        .
-        .
-        % Prerequisites for CSE214
-        :- course(cse214, 4, "Undergraduate", 1, 1), 
-           not course(cse114, _, "Undergraduate", _, _). 
-        
-        % Prerequisites for CSE215
-        :- course(cse215, 4, "Undergraduate", 1, 1), 
-           not course(ams151, _, "Undergraduate", _, _), 
-           not course(mat125, _, "Undergraduate", _, _), 
-           not course(mat131, _, "Undergraduate", _, _). 
+% Clingo code
+% Define course(course_name, credits, career, offered_spring, offered_fall)
+course(cse214, 4, "Undergraduate", 1, 1).
+course(cse215, 4, "Undergraduate", 1, 1).
+.
+.
+.
+% Define prerequisites
+.
+.
+.
+% Prerequisites for CSE214
+:- course(cse214, 4, "Undergraduate", 1, 1), 
+   not course(cse114, _, "Undergraduate", _, _). 
+
+% Prerequisites for CSE215
+:- course(cse215, 4, "Undergraduate", 1, 1), 
+   not course(ams151, _, "Undergraduate", _, _), 
+   not course(mat125, _, "Undergraduate", _, _), 
+   not course(mat131, _, "Undergraduate", _, _). 
     \end{lstlisting}
 
     Correspondingly, the knowledge base facts were translated into rules. For example, the fact a student needs take a minimum of 12 credits a semester (to maintain full time student status, shown on line 3 in the listing below as a constant), but a maximum of 18 credits (shown on line 4 as constant in the listing below) over $N$ semesters to graduate with CSE major 80 credits and 120 total credits would be translated as the following in Clingo (in the file, {\tt{results/cse\_bs\_grad\_reqs.lp}}): \\
 
     \begin{lstlisting}
-        % Constants
-        #const max_semesters = 12.
-        #const min_credits_per_semester = 12.
-        #const max_credits_per_semester = 18.
-        
-        % Define possible semesters
-        semester(1..max_semesters).
-        
-        % Schedule courses across semesters
-        1 { schedule(Course, Sem) : semester(Sem) } 1 :- course(Course, Credits, Career, Spring, Fall).
-        
-        % Prevent scheduling of courses already taken
-        :- course_taken(Course), schedule(Course, _).
-        
-        % Semester limits: at least 12 credits and at most 18 credits per semester
-        :- semester(Sem), SemCredits = #count { Credits, Course : schedule(Course, Sem), course(Course, Credits, "Undergraduate", _, _) }, SemCredits < min_credits_per_semester.
-        :- semester(Sem), SemCredits = #count { Credits, Course : schedule(Course, Sem), course(Course, Credits, "Undergraduate", _, _) }, SemCredits > max_credits_per_semester.
+% Constants
+#const max_semesters = 12.
+#const min_credits_per_semester = 12.
+#const max_credits_per_semester = 18.
 
-        % Ensure all scheduled courses comply with seasonal offerings
-        :- schedule(Course, Sem), course(Course, _, "Undergraduate", Spring, Fall), 
-           Sem \ 2 = 1, Fall = 0.
-        :- schedule(Course, Sem), course(Course, _, "Undergraduate", Spring, Fall), 
-           Sem \ 2 = 0, Spring = 0.
-        
-        % Count total credits and major credits
-        total_credits(Total) :- Total = #sum { Credits, Course : schedule(Course, _), course(Course, Credits, "Undergraduate", _, _) }.
-        major_credits(Major) :- Major = #sum { Credits, Course : schedule(Course, _), course(Course, Credits, "Undergraduate", _, _) }.
-        
-        % Graduation requirements
-        :- total_credits(Total), Total < 120.
-        :- major_credits(Major), Major < 80.
-        
-        % Objective to minimize the number of semesters
-        #minimize { 1, Sem : schedule(_, Sem) }.
-        
-        #show schedule/2.
+% Define possible semesters
+semester(1..max_semesters).
+
+% Schedule courses across semesters
+1 { schedule(Course, Sem) : semester(Sem) } 1 :- course(Course, Credits, Career, Spring, Fall).
+
+% Prevent scheduling of courses already taken
+:- course_taken(Course), schedule(Course, _).
+
+% Semester limits: at least 12 credits and at most 18 credits per semester
+:- semester(Sem), SemCredits = #count { Credits, Course : schedule(Course, Sem), course(Course, Credits, "Undergraduate", _, _) }, SemCredits < min_credits_per_semester.
+:- semester(Sem), SemCredits = #count { Credits, Course : schedule(Course, Sem), course(Course, Credits, "Undergraduate", _, _) }, SemCredits > max_credits_per_semester.
+
+% Ensure all scheduled courses comply with seasonal offerings
+:- schedule(Course, Sem), course(Course, _, "Undergraduate", Spring, Fall), 
+   Sem \ 2 = 1, Fall = 0.
+:- schedule(Course, Sem), course(Course, _, "Undergraduate", Spring, Fall), 
+   Sem \ 2 = 0, Spring = 0.
+
+% Count total credits and major credits
+total_credits(Total) :- Total = #sum { Credits, Course : schedule(Course, _), course(Course, Credits, "Undergraduate", _, _) }.
+major_credits(Major) :- Major = #sum { Credits, Course : schedule(Course, _), course(Course, Credits, "Undergraduate", _, _) }.
+
+% Graduation requirements
+:- total_credits(Total), Total < 120.
+:- major_credits(Major), Major < 80.
+
+% Objective to minimize the number of semesters
+#minimize { 1, Sem : schedule(_, Sem) }.
+
+#show schedule/2.
     \end{lstlisting}
 
     Moreover, the above code suffers from combinatorial explosion (i.e. the number of combinations that satisfies the model are so large, that the optimal model would take a significant amount of time to be computed).
     Instead, computing the schedule of two semesters is far more feasible. The code to do so is located in the file {\tt{results/sem.lp}}): \\
 
     \begin{lstlisting}
-        % Semester definition
-        semester(spring).
-        semester(fall).
-        
-        % Scheduling a course in a semester
-        { schedule(Course, spring) : course(Course, Credits, Career, 1, OfferedFall) } :-
-            not course_taken(Course).
-        
-        { schedule(Course, fall) : course(Course, Credits, Career, OfferedSpring, 1) } :-
-            not course_taken(Course).
-        
-        % Credit calculation per semester
-        credits_sum(Sem, TotalCredits) :-
-            semester(Sem),
-            TotalCredits = #sum { Credits, Course : schedule(Course, Sem), course(Course, Credits, _, _, _) }.
-        
-        % Enforce credit limits
-        :- credits_sum(Sem, TotalCredits), TotalCredits < 12.
-        :- credits_sum(Sem, TotalCredits), TotalCredits > 18.
-        
-        % Output directives to facilitate result interpretation
-        #show schedule/2.
+% Semester definition
+semester(spring).
+semester(fall).
+
+% Scheduling a course in a semester
+{ schedule(Course, spring) : course(Course, Credits, Career, 1, OfferedFall) } :-
+    not course_taken(Course).
+
+{ schedule(Course, fall) : course(Course, Credits, Career, OfferedSpring, 1) } :-
+    not course_taken(Course).
+
+% Credit calculation per semester
+credits_sum(Sem, TotalCredits) :-
+    semester(Sem),
+    TotalCredits = #sum { Credits, Course : schedule(Course, Sem), course(Course, Credits, _, _, _) }.
+
+% Enforce credit limits
+:- credits_sum(Sem, TotalCredits), TotalCredits < 12.
+:- credits_sum(Sem, TotalCredits), TotalCredits > 18.
+
+% Output directives to facilitate result interpretation
+#show schedule/2.
     \end{lstlisting}
 
 
@@ -549,7 +566,8 @@ Stony Brook University \\
             \begin{itemize}
                 \item Selenium
                 \item Pandas
-                \item webdriver-manager
+                \item BeautifulSoup4
+                \item Requests
             \end{itemize}
             \item Clingo
             \item ErgoAI (not implemented, but attempted)
@@ -585,6 +603,8 @@ Stony Brook University \\
     \begin{itemize}
         \item Prof. Annie Liu for the project idea and insights
         \item Geoffrey Churchill for discussions and insights
+        \item Prof. Paul Fodor for discussions and insights
+        \item Prof. Michael Kifer for email correspondence and help with ErgoAI
     \end{itemize}
 
     % TODO:
