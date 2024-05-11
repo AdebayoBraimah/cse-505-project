@@ -99,8 +99,6 @@
 \usepackage{tikz}
 \usetikzlibrary{fit, calc, decorations.markings}
 
-% TODO: Change title to reflect changes in project.
-
 % Title
 % \title{Knowledge Graph Augmented Generative AI for Course Recommendation and Schedule Building}
 % 
@@ -271,7 +269,7 @@ Stony Brook University \\
 
     \begin{enumerate}
         \item Knowledge graph construction from SBU course catalog (described in Figure \ref{fig:kb-kg}).
-        \item Converting JSON knowledge graph to Clingo atoms and predicates (described in Figure \ref{fig:kg-clingo}).
+        \item Converting/preprocessing JSON knowledge graph to Clingo atoms and predicates (described in Figure \ref{fig:kg-clingo}).
         \item Query the knowledge base of course requirements(described in Figure \ref{fig:kb-query}).
     \end{enumerate}
 
@@ -283,6 +281,40 @@ Stony Brook University \\
         \label{fig:uml-package}
     \end{figure}
 
+    The driver program of this project can be run as shown from the command line:
+
+    {\tt{./driver.py}}
+
+    Note, that file permissions may need to be changed for the file to run.
+
+    \newpage 
+    
+    The outputs of the file are the results of the test query, printed to the command line: \\
+
+    \begin{verbatim}
+--------------------------------------------
+Begin: query_clingo  |  May-11-2024 04:00:08
+--------------------------------------------
+
+clingo version 5.7.1
+Reading from ...projects/CSE505/results/cse_courses.lp ...
+Solving...
+Answer: 1
+schedule(che129,spring) schedule(che132,spring) schedule(geo122,spring)
+schedule(ams110,fall) schedule(ams301,fall) schedule(cse304,fall) 
+schedule(cse506,fall)
+SATISFIABLE
+
+Models       : 1+
+Calls        : 1
+Time         : 0.058s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time     : 0.053s
+
+--------------------------------------------
+End: query_clingo Execution time: 0.07 sec.   |  May-11-2024 04:00:08
+--------------------------------------------
+    \end{verbatim}
+
     \begin{figure}[h!]
         \centering
         \includegraphics[scale=0.4]{figures/uml/classes_src.png}
@@ -290,32 +322,8 @@ Stony Brook University \\
         \label{fig:uml-classes}
     \end{figure}
 
-    The driver program of this project can be run as shown from the command line:
+    Lastly, in the {\tt{src/scripts}} directory, one can batch download other major's courses information. These set of scripts were mainly included to download and find all of the non-CSE major prerequisite courses (e.g. MAT 123, MATH 125, etc). The scripts \\ {\tt{src/scripts/download\_courses.py}} and {\tt{src/scripts/download\_courses.sh}} accomplish this purpose. The script {\tt{src/scripts/download\_courses.sh}} is a wrapper script that parallelizes {\tt{src/scripts/download\_courses.py}}. However, the wrapper script has an additional external dependency: GNU Parallel\cite{parallel2018}, which must be installed and on the system path variable for the batch download scripts to work correctly.
 
-    {\tt{./app.py}}
-
-    Note, that file permissions may need to be changed for the file to run.
-
-    The outputs of the file are the results of the test query, printed to the command line (truncated version of the file {\tt{src/resources/cse.schedule.lp}}, thus the unsatisfiable result): \\
-
-    \begin{verbatim}
-        UNSATISFIABLE
-        
-        Models       : 0
-        Calls        : 1
-        Time         : 5.358s (Solving: 5.35s 1st Model: 0.00s Unsat: 5.35s)
-        CPU Time     : 5.351s
-    \end{verbatim}
-
-    % \begin{python}
-    % import os
-    % from src.ergoai.ergoai import query_ergoai
-    
-    % test_file: str = os.path.abspath("foo.ergo")
-    % query: str = "?Subject[?Property->?Object]"
-    
-    % query_ergoai(knowledge=test_file, query=query)
-    % \end{python}
 
     \subsubsection{Implementation Details}
     \label{subsubsec:implementation}
@@ -537,7 +545,7 @@ credits_sum(Sem, TotalCredits) :-
     \subsubsection{Design Issues \& Problems}
     \label{subsubsec:des-iss-probs}
 
-    The query written in {\tt{results/cse\_bs\_grad\_reqs.lp}} suffered from grounding overhead, and combinatorial explosion in Clingo. These two issues in particular were likely caused by the large input of course atoms (about 207 listed undergraduate and graduate courses, in addition to their corresponding pre- and co-requisites). From the combination defined in Eq. \ref{eq:combo}, and assuming that an undergraduate student could take anywhere between 4 and 6 courses (with the basic assumption that each course averages to about 3 credits), then there would exist anywhere between $1.457 \cdot 10^6$ to $7.430 \cdot 10^7$ possible models.
+    The query written in {\tt{results/cse\_bs\_grad\_reqs.lp}} suffered from grounding overhead, and combinatorial explosion in Clingo. These two issues in particular were likely caused by the large input of course atoms (about 207 listed undergraduate and graduate courses, in addition to their corresponding pre- and co-requisites). From the combination defined in Eq. \ref{eq:combo}, and assuming that an undergraduate student could take anywhere between 4 and 6 courses (with the basic assumption that each course averages to about 3 credits), then there would exist anywhere between $1.457 \cdot 10^6$ to $7.430 \cdot 10^7$ possible combinations.
 
     \begin{equation}
         \begin{aligned}
@@ -547,7 +555,7 @@ credits_sum(Sem, TotalCredits) :-
         \label{eq:combo}
     \end{equation}
 
-    With such a significantly large search space of 207 courses -- these large number of possible models make sense, further clarifying the extremely long runtime of {\tt{results/cse\_bs\_grad\_reqs.lp}}, for computing all possible course schedules.
+    With such a significantly large search space of 207 courses -- these large number of possible combinations make sense, further clarifying the extremely long runtime of {\tt{results/cse\_bs\_grad\_reqs.lp}}, for computing all possible course schedules.
 
     \subsection{Design Documents (updated)}
     \label{subsec:des-doc-up}
@@ -583,12 +591,10 @@ credits_sum(Sem, TotalCredits) :-
         \item Code base size: moderately sized at 32,597 lines of code.
     \end{itemize}
 
-    Lastly, this project, in its current state significantly lags behind the SOTA approaches.
+    Lastly, this project, in its current state significantly lags behind the SOTA approaches -- mainly in terms of reliability (correctness) rather than speed.
     
     \section{Testing \& Evaluation}
     \label{sec:test-eval}
-
-    % No official tests have been run yet -- as evaluation has been difficult (see section \ref{subsubsec:des-iss-probs} for further details). In the project's current state, evaluation is a tricky endeavor. Moreover, the tests that remain to be written and performed include:
 
     The set of tests that have been performed include: 
 
@@ -596,6 +602,45 @@ credits_sum(Sem, TotalCredits) :-
         \item Unit tests (for utility functions)
         \item Performance \& Correctness (performed via manual creation of course schedule)
     \end{itemize}
+
+    The unit tests mainly covered the utility functions and were implemented using PyTest. The unit tests are located in the {\tt{src/tests}} directory, can be run by typing: {\tt{cd src/tests}}, and running {\tt{pytest}} (assuming pytest is already installed). Manual testing was performed to evaluate the full scheduler and the two semester scheduler performance and correctness. The manual method (hand making schedules) was often correct -- but more time consuming (in both cases). The automated method for the 2 semester approach is fast -- but the correctness is questionable, as the courses are not sensibly scheduled. Additionally, the automated approach for 12 semester scheduling took so long, that the program was terminated prior to finding any models (see sec. \ref{subsubsec:des-iss-probs} for explanations as why this was the case). Results of the manual testing performance (in seconds) are shown in Figures \ref{fig:2sem} and \ref{fig:12sem}. Additionally, the commands to perform the (automated) evaluation are as follows: \\
+
+    \begin{lstlisting}
+# 2 sem
+./src/schedule.py query --knowledge=results/cse_courses.lp --query=results/sem.lp --query=results/cse_prereqs.lp --clingo
+
+# 12 sem approach # NOTE: This will not stop running
+./src/schedule.py query --knowledge=results/cse_courses.lp --query=results/cse_bs_grad_reqs.lp --query=results/cse_prereqs.lp --clingo
+
+# eval - 2 sem
+./src/schedule.py query --knowledge=results/eval/cse_courses.eval.lp --query=results/sem.lp --query=results/cse_prereqs.lp --clingo
+
+# eval - 12 sem # NOTE: This will not stop running
+./src/schedule.py query --knowledge=results/eval/cse_bs_grad_reqs.eval.lp --query=results/eval/cse_courses.eval.lp --query=results/cse_prereqs.lp --clingo
+    \end{lstlisting}
+
+    \section{Challenges \& Summary}
+    \label{sec:chall-summ}
+
+    The main challenges experienced in this project was that SBU's course catalog is not easily accessible for analysis. This was evident by the absence of available API access. Additionally, the course catalog was written in JavaScript -- making web scraping a difficult endeavor. Furthermore, satisfying the constraint in clingo for as originally planned was highly improbable (as explained in sec. \ref{subsubsec:des-iss-probs}) -- which can mainly be attributed to grounding overhead and combinatorial explosion. The original approach is more appropriate for checking if degree requirements have been satisfied. Lastly, modifying the core idea to accommodate two semesters rather than an arbitrary number of semesters has shown why the scheduling problem in this context is extremely challenging.
+
+    % \newpage
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[scale=0.5]{figures/eval/bar-graph-2sem.png}
+        \caption{Bar graph depicting the schedulers performance (time in sec.) vs manual testing for the 2 semester scheduling.}
+        \label{fig:2sem}
+    \end{figure}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[scale=0.5]{figures/eval/bar-graph-12sem.png}
+        \caption{Bar graph depicting the schedulers performance (time in sec.) vs manual testing for the 12 semester scheduling.}
+        \label{fig:12sem}
+    \end{figure}
+
+    \newpage
     
     \section{Acknowledgements}
     \label{sec:ack}
@@ -605,14 +650,9 @@ credits_sum(Sem, TotalCredits) :-
         \item Geoffrey Churchill for discussions and insights
         \item Prof. Paul Fodor for discussions and insights
         \item Prof. Michael Kifer for email correspondence and help with ErgoAI
+        \item Gokul and Apeksha for advice on scheduling just one semester to test performance and correctness.
     \end{itemize}
-
-    % TODO:
-    %   - Update acknowledgements section
-    %   - Include section that tracks changes or
-    %       at least mentions what was changed 
-    %       and why.
-
+    
     % Add newpage here to separate references from the
     % main text body
     \newpage
@@ -635,25 +675,18 @@ credits_sum(Sem, TotalCredits) :-
 
     \subsubsection{May 10, 2024}
 
-    % Inputs
-    % Decreased number of inputs and complexity of inputs
-    % only focusing on bs degerees
-    % Removed preferred classes
-    % 
-    % Outputs
-    % Added BeutifulSoup 4, reomved web-driver, its sub-package of selenium
-    % 
-    % Removed possible use of ErgoAI
-    
-    % Mention narrowed scope of project
-    % Mention combinatorial explosion
-    % Only focus on one semester
-    % Included tests
-
     \begin{itemize}
-        \item 
+        \item Removed preferred course selection option.
+        \item Only focused on BS degree, now disregarding MS and PhD degrees.
+        \item Updated tools used in project (added BeautifulSoup4).
+        \item Removed support for ErgoAI (some functions are still available however).
+        \item Included flow charts to describe system design.
+        \item Included updated clingo code for 2 semester scheduling (for fall and spring).
+        \item Added the results of manual testing and performance evaluation.
+        \item Update acknowledgements section.
     \end{itemize}
 
+    
     \subsubsection{April 26, 2024}
 
     \begin{itemize}
