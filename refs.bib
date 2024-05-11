@@ -96,12 +96,13 @@
       note = {\MakeUppercase {accessed}: Mar-12-2024},
 }
 
-@article{clingo,
+@misc{clingo,
   title = {{Multi-shot {ASP} solving with clingo}},
-  author = {Gebser, Martin and Kaminski, Roland and Kaufmann, Benjamin and Schaub, Torsten},
+  author = {{Gebser, Martin and Kaminski, Roland and Kaufmann, Benjamin and Schaub, Torsten}},
   journal = {{CoRR}},
   volume = {{abs/1705.09811}},
   year = {2017},
+  howpublished = {\url{https://www.cs.uni-potsdam.de/wv/publications/DBLP_journals/corr/GebserKKS17.pdf}},
   note = {\MakeUppercase {accessed}: Apr-21-2024},
 }
 
@@ -117,3 +118,59 @@
     note = {\MakeUppercase {accessed}: Apr-21-2024},
 }
 
+
+@misc{nurse2017,
+	address = {Cham},
+	title = {Nurse {Scheduling} via {Answer} {Set} {Programming}},
+	volume = {10377},
+	isbn = {978-3-319-61659-9 978-3-319-61660-5},
+	url = {http://link.springer.com/10.1007/978-3-319-61660-5_27},
+	abstract = {The Nurse Scheduling problem (NSP) is a combinatorial problem that consists of assigning nurses to shifts according to given practical constraints. In previous years, several approaches have been proposed to solve different variants of the NSP. In this paper, an ASP encoding for one of these variants is presented, whose requirements have been provided by an Italian hospital. We also design a second encoding for the computation of “optimal” schedules. Finally, an experimental analysis has been conducted on real data provided by the Italian hospital using both encodings. Results are very positive: the state-of-the-art ASP system CLINGO is able to compute one year schedules in few minutes, and it scales well even when more than one hundred nurses are considered.},
+	language = {en},
+	urldate = {2024-05-07},
+	booktitle = {Logic {Programming} and {Nonmonotonic} {Reasoning}},
+	publisher = {Springer International Publishing},
+	author = {Dodaro, Carmine and Maratea, Marco},
+	editor = {Balduccini, Marcello and Janhunen, Tomi},
+	year = {2017},
+	doi = {10.1007/978-3-319-61660-5_27},
+	pages = {301--307},
+        howpublished = {\url{http://www.star.dist.unige.it/~marco/Data/17lpnmr-nurse.pdf}},
+    note = {Series Title: Lecture Notes in Computer Science. \MakeUppercase {accessed}: May-07-2024},
+}
+
+@misc{lunch2023,
+	title = {{LUNCH}: an {Answer} {Set} {Programming} {System} for {Course} {Scheduling}},
+	abstract = {Timetable scheduling is a known NP-hard problem; despite this, there
+have been many efforts to enable fast and efficient algorithms and heuristics for
+such a challenging task. Within the realm of timetable scheduling lies the particularly complex problem of Course Scheduling (CS). The goal in CS is to find
+an optimal timetable configuration of courses within the constraints set by faculty, course requirements and departmental functions. Answer Set Programming
+(ASP) is a declarative logic programming paradigm for solving combinatorial
+search tasks; instead of explicitly writing the solution to the problem, ASP programs define the problem’s constraints and knowledge in a high-level language,
+leaving the model search to a highly optimized solver. In this work, we construct and showcase LUNCH, an easily extensible, free and open-source system
+for course scheduling. Notably, we study the use of ASP for course scheduling
+within the specific context of the Computer Science Department at the University
+of Sao Paulo, showing how LUNCH fares against the manual scheduling done in
+previous years},
+	year = {2023},
+	urldate = {2024-05-07},
+	author = {{Ana Y.F. de Lima} and {Briza M. D. de Sousa} and {Daniel P. Cardeal} and {Jessica Y. N. Sato} and {Lorenzo B. Salvador} and {Bruna Bazaluk}},
+    howpublished = {\url{https://sol.sbc.org.br/index.php/eniac/article/download/25756/25572/}},
+    note = {\MakeUppercase {accessed}: May-07-2024},
+}
+
+@misc{scheduling1972,
+	title = {{Optimal scheduling for two-processor systems}},
+	volume = {1},
+	issn = {1432-0525},
+	howpublished = {\url{https://doi.org/10.1007/BF00288685}},
+	doi = {10.1007/BF00288685},
+	abstract = {{Despite the recognized potential of multiprocessing little is known concerning the general problem of finding efficient algorithms which compute minimallength schedules for given computations and m≧2 processors. In this paper we formulate a general model of computation structures and exhibit an efficient algorithm for finding optimal nonpreemptive schedules for these structures on two-processor systems. We prove that the algorithm gives optimal solutions and discuss its application to preemptive scheduling disciplines.}},
+	number = {3},
+	journal = {Acta Informatica},
+	author = {Coffman, E. G. and Graham, R. L.},
+	month = sep,
+	year = {1972},
+	pages = {200--213},
+        note = {\MakeUppercase {accessed}: May-10-2024},
+}
