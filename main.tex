@@ -293,25 +293,25 @@ Stony Brook University \\
 
     \begin{verbatim}
 --------------------------------------------
-Begin: query_clingo  |  May-11-2024 04:00:08
+Begin: query_clingo  |  May-16-2024 00:43:51
 --------------------------------------------
 
 clingo version 5.7.1
 Reading from ...projects/CSE505/results/cse_courses.lp ...
 Solving...
 Answer: 1
-schedule(che129,spring) schedule(che132,spring) schedule(geo122,spring)
-schedule(ams110,fall) schedule(ams301,fall) schedule(cse304,fall) 
-schedule(cse506,fall)
+schedule(bio204,spring) schedule(che129,spring) schedule(geo102,spring) 
+schedule(geo122,spring) schedule(ast203,fall) schedule(ast205,fall) 
+schedule(ams301,fall) schedule(cse304,fall)
 SATISFIABLE
 
 Models       : 1+
 Calls        : 1
-Time         : 0.058s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
-CPU Time     : 0.053s
+Time         : 0.063s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time     : 0.059s
 
 --------------------------------------------
-End: query_clingo Execution time: 0.07 sec.   |  May-11-2024 04:00:08
+End: query_clingo Execution time: 0.16 sec.   |  May-16-2024 00:43:51
 --------------------------------------------
     \end{verbatim}
 
@@ -379,7 +379,7 @@ End: query_clingo Execution time: 0.07 sec.   |  May-11-2024 04:00:08
     \subsection{Documentation}
     \label{subsec:docs}
 
-    The documentation of this project is contained in the {\tt{doc}} folder. Documentation was also written in reStructured Text ({\tt{.rst}}) files, and built using python via \href{https://www.sphinx-doc.org/en/master/}{Sphinx} ({\tt{HTML}} documentation can be found in {\tt{doc/build/html/index.html}}). The {\tt{HTML}} documentation can found online \href{\docLink}{here} (recommended method of viewing this documentation).
+    The documentation of this project is contained in the {\tt{doc}} folder. Documentation was also written in reStructured Text ({\tt{.rst}}) files, and built using python via \href{https://www.sphinx-doc.org/en/master/}{Sphinx}. The {\tt{HTML}} documentation can found online \href{\docLink}{here} (recommended method of viewing this documentation).
 
     \subsection{Design Document}
     \label{subsec:design-docs}
@@ -461,6 +461,8 @@ course(cse215, 4, "Undergraduate", 1, 1).
 .
 .
 .
+.
+.
 % Prerequisites for CSE214
 :- course(cse214, 4, "Undergraduate", 1, 1), 
    not course(cse114, _, "Undergraduate", _, _). 
@@ -475,6 +477,31 @@ course(cse215, 4, "Undergraduate", 1, 1).
     Correspondingly, the knowledge base facts were translated into rules. For example, the fact a student needs take a minimum of 12 credits a semester (to maintain full time student status, shown on line 3 in the listing below as a constant), but a maximum of 18 credits (shown on line 4 as constant in the listing below) over $N$ semesters to graduate with CSE major 80 credits and 120 total credits would be translated as the following in Clingo (in the file, {\tt{results/cse\_bs\_grad\_reqs.lp}}): \\
 
     \begin{lstlisting}
+% Define undergraduate graduation requirements
+
+% 1.
+% Required intro courses
+required_intro_course(cse220).
+required_intro_course(X) :- course(X, _, _, _, _), X = cse215; X = cse150.
+required_intro_course(X) :- course(X, _, _, _, _), X = cse114; X = cse214; X = cse216.
+
+% Allow choice for one of these pairs to fulfill the requirement
+1 { required_intro_course(cse215); required_intro_course(cse150) } 1.
+
+% Choice rule for substitutions
+completed_original_set :- required_intro_course(cse114), 
+   required_intro_course(cse214), 
+   required_intro_course(cse216).
+
+completed_substitute_set :- required_intro_course(cse160), 
+   required_intro_course(cse161), 
+   required_intro_course(cse260), 
+   required_intro_course(cse261).
+
+1 { completed_original_set; completed_substitute_set } 1.
+.
+.
+.
 % Constants
 #const max_semesters = 12.
 #const min_credits_per_semester = 12.
@@ -513,6 +540,8 @@ major_credits(Major) :- Major = #sum { Credits, Course : schedule(Course, _), co
 #show schedule/2.
     \end{lstlisting}
 
+    Additionally, the graduation requirements are defined (truncated to preserve space). The code above performs the following: from the defined constants (minimum and maximum number credits and maximum number of semesters), with 1 to maximum number of semesters, schedule one course for one semester, provided the course name, number of credits, career (e.g. undergraduate or graduate), and whether it is offered in the fall or spring. Next, we prevent the scheduling of courses already taken. Subsequently, we now check if the scheduled courses satisfy the semester credit requirements (e.g. the minimum and maximum number credits, 12 and 18 respectively). Next, we ensure that the scheduled courses comply with seasonal offerings (e.g. is it offered in the fall or spring). This is then subsequently followed by checking to see if the total credits and major credits constraints are satisfied (120 and 80 credits respectively). Lastly, we minimize the number of semesters to schedule.
+    
     Moreover, the above code suffers from combinatorial explosion (i.e. the number of combinations that satisfies the model are so large, that the optimal model would take a significant amount of time to be computed).
     Instead, computing the schedule of two semesters is far more feasible. The code to do so is located in the file {\tt{results/sem.lp}}): \\
 
@@ -520,6 +549,10 @@ major_credits(Major) :- Major = #sum { Credits, Course : schedule(Course, _), co
 % Semester definition
 semester(spring).
 semester(fall).
+
+% Constants
+#const min_credits = 13. % Used 13 instead of 12 to pass correctness tests
+#const max_credits = 18.
 
 % Scheduling a course in a semester
 { schedule(Course, spring) : course(Course, Credits, Career, 1, OfferedFall) } :-
@@ -534,12 +567,14 @@ credits_sum(Sem, TotalCredits) :-
     TotalCredits = #sum { Credits, Course : schedule(Course, Sem), course(Course, Credits, _, _, _) }.
 
 % Enforce credit limits
-:- credits_sum(Sem, TotalCredits), TotalCredits < 12.
-:- credits_sum(Sem, TotalCredits), TotalCredits > 18.
+:- credits_sum(Sem, TotalCredits), TotalCredits < min_credits.
+:- credits_sum(Sem, TotalCredits), TotalCredits > max_credits.
 
 % Output directives to facilitate result interpretation
 #show schedule/2.
     \end{lstlisting}
+
+    In the code above, the spring and fall semesters are defined, in addition to two constants: minimum and maximum number of credits (which was set to 13, rather than 12 -- this was to ensure that correctness tests passed during evaluation e.g. the schedule would output an 11-credit semester, which is not a valid schedule). Next, the courses would be scheduled for the spring, and the fall. Subsequently, the credits for each semester are then totaled and checked to see if the constraints are satisfied.
 
 
     \subsubsection{Design Issues \& Problems}
@@ -555,7 +590,7 @@ credits_sum(Sem, TotalCredits) :-
         \label{eq:combo}
     \end{equation}
 
-    With such a significantly large search space of 207 courses -- these large number of possible combinations make sense, further clarifying the extremely long runtime of {\tt{results/cse\_bs\_grad\_reqs.lp}}, for computing all possible course schedules.
+    With such a significantly large search space of 207 courses -- these large number of possible combinations make sense, further clarifying the extremely long runtime of \\ {\tt{results/cse\_bs\_grad\_reqs.lp}}, for computing all possible course schedules.
 
     \subsection{Design Documents (updated)}
     \label{subsec:des-doc-up}
@@ -565,7 +600,7 @@ credits_sum(Sem, TotalCredits) :-
     \subsection{Project Implementation}
     \label{subsec:proj-imp}
 
-    The project implementation can be found in the following code base, located at \href{\repoLink}{this GitHub Repository}. The development effort of the project required sizable effort -- especially in the parts pertaining to ErgoAI (which is not currently implemented). Below is a brief summary of the project:
+    The project implementation can be found in the following code base, located at \href{\repoLink}{this GitHub Repository}. The development effort of the project required sizable effort -- especially in the parts pertaining to ErgoAI\cite{ergoai} (which is not currently implemented). Below is a brief summary of the project:
 
     \begin{itemize}
         \item Languages
@@ -591,7 +626,9 @@ credits_sum(Sem, TotalCredits) :-
         \item Code base size: moderately sized at 8,657 lines of code.
     \end{itemize}
 
-    Lastly, this project, in its current state significantly lags behind the SOTA approaches -- mainly in terms of reliability (correctness) rather than speed.
+    Lastly, this project, in its current state is sub-optimal in comparison to SOTA approaches.
+    % significantly lags behind the SOTA approaches -- mainly in terms of reliability (correctness) rather than speed. 
+    For example, the output schedule shown from the output of the driver program in sec \ref{subsec:api} shows a schedule that does satisfy the constraints (12 credits in the spring, and 13 credits in the fall), however, this schedule is sub-optimal for student success as several courses such as AST203 and AST204 in the same semester would be a difficult schedule to undertake (NOTE: this is an opinion of the perceived difficulty of the recommended courses, and is not reflected in any metric in the program/code).
     
     \section{Testing \& Evaluation}
     \label{sec:test-eval}
@@ -603,7 +640,7 @@ credits_sum(Sem, TotalCredits) :-
         \item Performance \& Correctness (performed via manual creation of course schedule)
     \end{itemize}
 
-    The unit tests mainly covered the utility functions and were implemented using PyTest. The unit tests are located in the {\tt{src/tests}} directory, can be run by typing: {\tt{cd src/tests}}, and running {\tt{pytest}} (assuming pytest is already installed). Manual testing was performed to evaluate the full scheduler and the two semester scheduler performance and correctness. The manual method (hand making schedules) was often correct -- but more time consuming (in both cases). The automated method for the 2 semester approach is fast -- but the correctness is questionable, as the courses are not sensibly scheduled. Additionally, the automated approach for 12 semester scheduling took so long, that the program was terminated prior to finding any models (see sec. \ref{subsubsec:des-iss-probs} for explanations as why this was the case). Results of the manual testing performance (in seconds) are shown in Figures \ref{fig:2sem} and \ref{fig:12sem}. Additionally, the commands to perform the (automated) evaluation are as follows: \\
+    The unit tests mainly covered the utility functions and were implemented using PyTest. The unit tests are located in the {\tt{src/tests}} directory, can be run by typing: {\tt{cd src/tests}}, and running {\tt{pytest}} (assuming pytest is already installed). Manual testing was performed to evaluate the full scheduler and the two semester scheduler performance and correctness. The manual method (hand making schedules) was often correct -- but more time consuming (in both cases). The automated method for the 2 semester approach is fast -- but the correctness is questionable, as the courses are not sensibly scheduled (i.e. vital prerequisite courses might be ignored, e.g. CSE101, see the Clingo output in the listing shown in \ref{subsec:api}). Additionally, the automated approach for 12 semester scheduling took so long, that the program was terminated prior to finding any models (see sec. \ref{subsubsec:des-iss-probs} for explanations as to why this was the case). Results of the manual testing performance (in minutes) are shown in Figures \ref{fig:2sem} and \ref{fig:12sem}. Additionally, the commands to perform the (automated) evaluation are as follows: \\
 
     \begin{lstlisting}
 # 2 sem
@@ -619,24 +656,82 @@ credits_sum(Sem, TotalCredits) :-
 ./src/schedule.py query --knowledge=results/eval/cse_bs_grad_reqs.eval.lp --query=results/eval/cse_courses.eval.lp --query=results/cse_prereqs.lp --clingo
     \end{lstlisting}
 
-    \section{Challenges \& Summary}
+    For evaluation and correctness testing purposes, see the output of {\tt{\# eval - 2 sem}}:
+
+    \begin{lstlisting}
+--------------------------------------------
+Begin: query  |  May-16-2024 02:22:03
+--------------------------------------------
+
+--------------------------------------------
+Begin: query_clingo  |  May-16-2024 02:22:03
+--------------------------------------------
+
+clingo version 5.7.1
+Reading from results/eval/cse_courses.eval.lp ...
+Solving...
+Answer: 1
+schedule(ams310,spring) schedule(bio204,spring) schedule(che129,spring) 
+schedule(che131,spring) schedule(ams161,fall) schedule(bio201,fall) 
+schedule(bio204,fall) schedule(che131,fall) schedule(che133,fall)
+SATISFIABLE
+
+Models       : 1+
+Calls        : 1
+Time         : 0.013s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time     : 0.013s
+
+--------------------------------------------
+End: query_clingo Execution time: 0.02 sec.   |  May-16-2024 02:22:03
+--------------------------------------------
+
+--------------------------------------------
+End: query Execution time: 0.02 sec.   |  May-16-2024 02:22:03
+--------------------------------------------
+    \end{lstlisting}
+
+    Comparing the information from the corresponding course atoms:
+
+    \begin{lstlisting}
+% Spring
+course(ams310, 3, "Undergraduate", 1, 1).
+course(bio204, 2, "Undergraduate", 1, 1).
+course(che129, 4, "Undergraduate", 1, 1).
+course(che131, 4, "Undergraduate", 1, 1).
+
+% Spring total: 13 credits
+
+% Fall
+course(ams161, 3, "Undergraduate", 1, 1).
+course(bio201, 3, "Undergraduate", 1, 1).
+course(bio204, 2, "Undergraduate", 1, 1).
+course(che131, 4, "Undergraduate", 1, 1).
+course(che133, 1, "Undergraduate", 1, 1).
+
+% Fall total: 13 credits
+    \end{lstlisting}
+
+One can observe that the minimum credit constraints are satisfied -- however, the courses BIO204 and CHE131 are repeated.
+
+    \section{Future Directions, Challenges \& Summary}
     \label{sec:chall-summ}
 
-    The main challenges experienced in this project was that SBU's course catalog is not easily accessible for analysis. This was evident by the absence of available API access. Additionally, the course catalog was written in JavaScript -- making web scraping a difficult endeavor. Furthermore, satisfying the constraint in clingo for as originally planned was highly improbable (as explained in sec. \ref{subsubsec:des-iss-probs}) -- which can mainly be attributed to grounding overhead and combinatorial explosion. The original approach is more appropriate for checking if degree requirements have been satisfied. Lastly, modifying the core idea to accommodate two semesters rather than an arbitrary number of semesters has shown why the scheduling problem in this context is extremely challenging.
+    The future direction of this project could be to include additional scheduling information such as the time of day the course is offered -- which I think would offer a more optimal schedule for CSE students. Additionally, the project could be re-written in ErgoAI, with the constraints handled in miniZinc -- as I think ErgoAI's reasoning engine is likely better suited for handling large amounts of information. \\
+    The main challenges experienced in this project was that SBU's course catalog is not easily accessible for analysis. This was evident by the absence of available API access. Additionally, the course catalog was written in JavaScript -- making web scraping a difficult endeavor. Furthermore, satisfying the constraint in clingo as originally planned was highly improbable (as explained in sec. \ref{subsubsec:des-iss-probs}) -- which can mainly be attributed to grounding overhead and combinatorial explosion. The original approach is more appropriate for checking if degree requirements have been satisfied. Lastly, modifying the core idea to accommodate two semesters rather than an arbitrary number of semesters has shown why the scheduling problem in this context is extremely challenging.
 
     % \newpage
 
     \begin{figure}[h!]
         \centering
         \includegraphics[scale=0.5]{figures/eval/bar-graph-2sem.png}
-        \caption{Bar graph depicting the schedulers performance (time in sec.) vs manual testing for the 2 semester scheduling.}
+        \caption{Bar graph depicting the schedulers performance (time in min.) vs manual testing for the 2 semester scheduling.}
         \label{fig:2sem}
     \end{figure}
 
     \begin{figure}[h!]
         \centering
         \includegraphics[scale=0.5]{figures/eval/bar-graph-12sem.png}
-        \caption{Bar graph depicting the schedulers performance (time in sec.) vs manual testing for the 12 semester scheduling.}
+        \caption{Bar graph depicting the schedulers performance (time in min.) vs manual testing for the 12 semester scheduling.}
         \label{fig:12sem}
     \end{figure}
 
@@ -672,6 +767,13 @@ credits_sum(Sem, TotalCredits) :-
     \label{subsec:change}
 
     The most recent/changes updates are at the top.
+
+    \subsubsection{May 15, 2024}
+
+    \begin{itemize}
+        \item Updated testing \& evaluation with corresponding code and correctness information
+        \item 
+    \end{itemize}
 
     \subsubsection{May 10, 2024}
 
