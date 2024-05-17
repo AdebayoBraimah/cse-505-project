@@ -719,6 +719,19 @@ One can observe that the minimum credit constraints are satisfied -- however, th
     The future direction of this project could be to include additional scheduling information such as the time of day the course is offered -- which I think would offer a more optimal schedule for CSE students. Additionally, the project could be re-written in ErgoAI, with the constraints handled in miniZinc -- as I think ErgoAI's reasoning engine is likely better suited for handling large amounts of information. \\
     The main challenges experienced in this project was that SBU's course catalog is not easily accessible for analysis. This was evident by the absence of available API access. Additionally, the course catalog was written in JavaScript -- making web scraping a difficult endeavor. Furthermore, satisfying the constraint in clingo as originally planned was highly improbable (as explained in sec. \ref{subsubsec:des-iss-probs}) -- which can mainly be attributed to grounding overhead and combinatorial explosion. The original approach is more appropriate for checking if degree requirements have been satisfied. Lastly, modifying the core idea to accommodate two semesters rather than an arbitrary number of semesters has shown why the scheduling problem in this context is extremely challenging.
 
+    \section{Problems \& Issued Encountered}
+    \label{sec:problems}
+
+    This section mostly summarizes the problems and issues encountered over the course of this project:
+
+    \begin{itemize}
+        \item The Stony Brook Course catalog on SOLAR (located \href{https://prod.ps.stonybrook.edu/psc/csprodg/EMPLOYEE/CAMP/c/COMMUNITY_ACCESS.SSS_BROWSE_CATLG.GBL?}{here}) was written in JavaScript and required {\tt{selenium}} to scrape the web pages.
+        \item The installation of selenium sometimes fails -- see the linked \href{\docLink}{documentation linked here that remedies this issue} -- click {\tt{Troubleshooting}}.
+        \item Trying to schedule an entire undergraduate's career of courses proved difficult -- likely due to Clingo's grounding overhead and/or combinatorial explosion.
+        \item Scheduling a fall and spring semesters worth of courses proved to be a far better approach -- however, the current approach mostly satisfies course requirements, not undergraduate CSE graduation requirements.
+        \item The use of ErgoAI's reasoning engine in conjunction with the constraint solver from miniZinc would have likely made the large search space of 207 offered CSE courses less of an issue.
+    \end{itemize}
+
     % \newpage
 
     \begin{figure}[h!]
@@ -768,14 +781,19 @@ One can observe that the minimum credit constraints are satisfied -- however, th
 
     The most recent/changes updates are at the top.
 
-    \subsubsection{May 15, 2024}
+    \subsubsection*{May 16, 2024}
+
+    \begin{itemize}
+        \item Added \fullref{sec:problems}
+    \end{itemize}
+
+    \subsubsection*{May 15, 2024}
 
     \begin{itemize}
         \item Updated testing \& evaluation with corresponding code and correctness information
-        \item 
     \end{itemize}
 
-    \subsubsection{May 10, 2024}
+    \subsubsection*{May 10, 2024}
 
     \begin{itemize}
         \item Removed preferred course selection option.
@@ -789,7 +807,7 @@ One can observe that the minimum credit constraints are satisfied -- however, th
     \end{itemize}
 
     
-    \subsubsection{April 26, 2024}
+    \subsubsection*{April 26, 2024}
 
     \begin{itemize}
         \item Removed/exchanged these tools and features:
